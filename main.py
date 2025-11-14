@@ -5,13 +5,13 @@ import requests
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from schemas.request.server_user_schema import ServerUserCreate
-from schemas.request.user_for_delete_schema import UserForDelete
-from schemas.request.user_schema import UserCreate
-from services.server_profile_service import ServerProfileService
-from services.user_service import UserService
-from settings.settings import settings
-from orm.database.database import create_tables, async_session_factory
+from app.src.schemas.request.server_user_schema import ServerUserCreate
+from app.src.schemas.request.user_for_delete_schema import UserForDelete
+from app.src.schemas.request.user_schema import UserCreate
+from app.src.services.server_profile_service import ServerProfileService
+from app.src.services.user_service import UserService
+from app.src.settings.settings import settings
+from app.src.orm.database.database import create_tables, async_session_factory
 
 token = settings.TOKEN
 
@@ -98,7 +98,7 @@ async def on_member_remove(member: disnake.Member):
         if welcome_channel:
             embed = disnake.Embed(
                 title = "Плохие новости",
-                description = f"мы в ахуе, {member.mention}, решил уйти с **{member.guild.name}",
+                description = f"{member.mention}, решил уйти с **{member.guild.name}",
 
                 color = disnake.Color.red(),
                 timestamp = datetime.now()
