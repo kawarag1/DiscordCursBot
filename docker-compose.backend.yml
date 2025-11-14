@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: poetry run python main.py
+    environment:
+      - POETRY_VIRTUALENVS_CREATE=false
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app/src 
+
+  discord_database:
+    container_name: discord_database
+    image: postgres:latest
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5555:5432
+    volumes:
+      - /var/lib/postgresql/data
