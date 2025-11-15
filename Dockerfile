@@ -9,9 +9,9 @@ COPY pyproject.toml poetry.lock ./
 RUN apt-get update && apt-get install -y gcc
 
 
-RUN pip install poetry==1.4.2
+RUN pip install poetry
 
-RUN poetry install
+RUN poetry install --no-root
 
 RUN poetry config virtualenvs.create false
 
