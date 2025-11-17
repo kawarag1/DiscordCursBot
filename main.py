@@ -3,6 +3,7 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+import math
 
 from app.src.schemas.request.server_user_schema import ServerUserCreate
 from app.src.schemas.request.user_for_delete_schema import UserForDelete
@@ -130,6 +131,35 @@ async def ping(inter: disnake.ApplicationCommandInteraction):
 
 @bot.event
 async def on_message(message: disnake.Message):
-    pass
+    if message.author.bot:
+        return
+    else:
+        async with async_session_factory() as session:
+            async with session.begin():
+                profile_service = ServerProfileService(session)
+                profile = await profile_service.get_server_profile(message.author.id)
+                profile.message_count += 1
+                level = math.sqrt(profile.message_count)
+                if level.is_integer():
+                    profile.level = int(level)
+                    await profile_service.change_server_profile(profile)
+
+
+                    welcome_channel_id = 1403031110971031756
+                    welcome_channel = bot.get_channel(welcome_channel_id)
+                    if welcome_channel:
+                        embed = disnake.Embed(
+                            title = "Повышение уровня!",
+                            description = f"{message.author.mention} получил {profile.level} уровень!",
+                        )
+                        await welcome_channel.send(embed=embed)
+
+                else:
+                    await profile_service.change_server_profile(profile)
+
+
+
+
+        
 
 bot.run(token)
