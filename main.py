@@ -159,7 +159,14 @@ async def on_message(message: disnake.Message):
 
 
 
+@bot.slash_command(name="level", description="Проверить свой уровень")
+async def check_level(inter: disnake.ApplicationCommandInteraction):
+     async with async_session_factory() as session:
+            async with session.begin():
+                profile_service = ServerProfileService(session)
+                profile = await profile_service.get_server_profile(inter.user.id)
+                await inter.response.send_message(f"Ваш уровень: {profile.level}")
+    
 
-        
 
 bot.run(token)
