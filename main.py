@@ -1,14 +1,10 @@
 import disnake
 # from create_link import CreatePaymentLink
 from disnake.ext import commands
-from datetime import datetime
 import math
 import os
 
-from app.src.schemas.request.server_user_schema import ServerUserCreate
-from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.server_profile_service import ServerProfileService
-from app.src.services.user_service import UserService
 from app.src.settings.settings import settings
 from app.src.orm.database.database import create_tables, async_session_factory
 
