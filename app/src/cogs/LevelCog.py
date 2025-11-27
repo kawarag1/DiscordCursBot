@@ -39,7 +39,7 @@ class LevelCog(commands.Cog):
     async def on_message(self, message: disnake.Message):
         if message.author.bot:
             return
-        await self.count_message()
+        await self.count_message(message)
                         
 
 def setup(bot:commands.Bot):
