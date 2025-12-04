@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 
 class VoiceCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.auto_delete_channels = set()
 
