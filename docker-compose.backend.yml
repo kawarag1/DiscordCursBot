@@ -13,7 +13,6 @@ services:
   discord_database:
     container_name: discord_database
     image: postgres:latest
-    restart: always
     env_file:
       - .env
     environment:
