@@ -1,0 +1,71 @@
+import disnake
+from disnake.ext import commands
+from datetime import datetime
+
+class MessageLogsCog(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self.log_chanell_id = 1446040720686317629
+
+
+    async def create_embed(self, message: disnake.Message, moderator: disnake.Member = None):
+        embed = disnake.Embed(
+            title = f"Сообщение отправлено",
+            color=disnake.Color.green(),
+            timestamp = datetime.now()
+        )
+
+        embed.add_field(
+            name = "Содержание сообщения",
+            value = message.content[:1024] if message.content else "Сообщение без текста",
+            inline = False
+        )
+
+        embed.add_field(
+            name = "Отправитель",
+            value=f"{message.author.mention}\n`{message.author.name}#{message.author.discriminator}`",
+            inline=True
+        )
+
+        embed.add_field(
+            name="📁 Канал",
+            value=f"{message.channel.mention}\n`{message.channel.name}`",
+            inline=True
+        )
+
+        if moderator:
+            embed.add_field(
+                name="🛠️ Отправлено через",
+                value=f"{moderator.mention}\n`{moderator.name}#{moderator.discriminator}`",
+                inline=True
+            )
+
+        embed.add_field(
+            name="🔗 Ссылка на сообщение",
+            value=f"[Перейти]({message.jump_url})",
+            inline=False
+        )
+
+        embed.set_footer(text=f"ID сообщения: {message.id} | Автор: {message.author.id}")
+
+        embed.set_thumbnail(url=message.author.display_avatar.url)
+
+        return embed
+
+    @commands.Cog.listener()
+    async def on_message(self, message: disnake.Message):
+        if message.author.bot:
+            return
+        
+        log_chanell_id = self.bot.get_channel(self.log_chanell_id)
+        if log_chanell_id:
+            try:
+                embed = await self.create_embed(message)
+                await log_chanell_id.send(embed = embed)
+            except Exception as e:
+                print(f"Ошибка при логировании: {e}")
+
+def setup(bot):
+    bot.add_cog(MessageLogsCog(bot))
+            
+        
