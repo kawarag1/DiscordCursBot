@@ -40,7 +40,16 @@ class LevelCog(commands.Cog):
         if message.author.bot:
             return
         await self.count_message(message)
-                        
+                            
+
+    @commands.slash_command(name="level", description="Проверить свой уровень")
+    async def check_level(self, inter: disnake.ApplicationCommandInteraction):
+        async with async_session_factory() as session:
+                async with session.begin():
+                    profile_service = ServerProfileService(session)
+                    profile = await profile_service.get_server_profile(inter.user.id)
+                    await inter.response.send_message(f"Ваш уровень: {profile.level}")
+
 
 def setup(bot:commands.Bot):
     bot.add_cog(LevelCog(bot))
