@@ -9,7 +9,7 @@ COPY pyproject.toml poetry.lock ./
 RUN apt-get update && apt-get install -y gcc
 
 
-RUN pip install poetry
+RUN pip install poetry==2.1.3
 
 RUN poetry install --no-root
 
