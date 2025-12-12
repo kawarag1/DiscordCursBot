@@ -6,7 +6,6 @@ from app.src.services.user_service import UserService
 from app.src.orm.database.database import async_session_factory
 from app.src.schemas.request.server_user_schema import ServerUserCreate
 from app.src.schemas.request.user_schema import UserCreate
-from app.src.services.server_profile_service import ServerProfileService
 
 class MemberLeaveJoin(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -59,15 +58,10 @@ class MemberLeaveJoin(commands.Cog):
             ds_id = member.id,
             nickname = member.name,
             avatar_url = member.avatar.url if member.avatar else "",
-            tag = member.tag,
-            created_at = member.created_at.isoformat()
-        )
-
-        user_profile = ServerUserCreate(
-            ds_id = member.id,
-            server_nickname = member.display_name,
+            created_at = member.created_at.isoformat(),
             message_count = 1,
-            level = 1
+            level = 1,
+            guild_id = member.guild.id
         )
 
         async with async_session_factory() as session:
@@ -75,18 +69,7 @@ class MemberLeaveJoin(commands.Cog):
                 user_service = UserService(session)
                 await user_service.add_new_user(user)
 
-
-        async with async_session_factory() as session:
-            async with session.begin():
-                server_profile_service = ServerProfileService(session)
-                await server_profile_service.add_new_server_profile(user_profile)
-
     async def delete_user_from_database(self, member: disnake.Member):
-        async with async_session_factory() as session:
-                async with session.begin():
-                    profile_service = ServerProfileService(session)
-                    await profile_service.delete_server_profile(member.id)
-
         async with async_session_factory() as session:
                 async with session.begin():
                     user_service = UserService(session)
