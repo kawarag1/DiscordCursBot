@@ -2,8 +2,9 @@ import disnake
 import math
 from disnake.ext import commands
 
-from app.src.services.server_profile_service import ServerProfileService
 from app.src.orm.database.database import async_session_factory
+from app.src.schemas.request.user_schema import UserCreate
+from app.src.services.user_service import UserService
 
 class LevelCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -20,20 +21,21 @@ class LevelCog(commands.Cog):
     async def count_message(self, message: disnake.Message):
         async with async_session_factory() as session:
             async with session.begin():
-                profile_service = ServerProfileService(session)
-                profile = await profile_service.get_server_profile(message.author.id)
+                user_service = UserService(session)
+                profile: UserCreate = await user_service.get_server_profile(message.author.id)
+                print(profile)
                 profile.message_count += 1
                 level = math.sqrt(profile.message_count)
                 if level.is_integer():
                     profile.level = int(level)
-                    await profile_service.change_server_profile(profile)
+                    await user_service.change_server_profile(profile)
 
                     welcome_channel = self.bot.get_channel(self.welcome_channel_id)
                     if welcome_channel:
                         embed = await self.create_embed(message, profile.level)
                         await welcome_channel.send(embed=embed)
                 else:
-                    await profile_service.change_server_profile(profile)
+                    await user_service.change_server_profile(profile)
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
@@ -46,8 +48,8 @@ class LevelCog(commands.Cog):
     async def check_level(self, inter: disnake.ApplicationCommandInteraction):
         async with async_session_factory() as session:
                 async with session.begin():
-                    profile_service = ServerProfileService(session)
-                    profile = await profile_service.get_server_profile(inter.user.id)
+                    user_service = UserService(session)
+                    profile = await user_service.get_server_profile(inter.user.id)
                     await inter.response.send_message(f"Ваш уровень: {profile.level}")
 
 

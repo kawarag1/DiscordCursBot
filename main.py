@@ -1,10 +1,9 @@
 import disnake
 # from create_link import CreatePaymentLink
 from disnake.ext import commands
-import math
 import os
 
-from app.src.services.server_profile_service import ServerProfileService
+from app.src.services.guild_service import GuildService
 from app.src.settings.settings import settings
 from app.src.orm.database.database import create_tables, async_session_factory
 
@@ -29,6 +28,15 @@ for filename in os.listdir("./app/src/cogs"):
 async def on_ready():
     await create_tables()
     print(f"{bot.user} is activated!")
+    for guild in bot.guilds:
+        async with async_session_factory() as session:
+            async with session.begin():
+                guild_service = GuildService(session)
+                guild_check = await guild_service.check_guild_by_id(guild.id)
+                if guild_check:
+                    print("True")
+                else:
+                    await guild_service.add_new_guild(guild)
 
 
 
