@@ -1,7 +1,8 @@
 from sqlalchemy import select
+
 from app.src.orm.database.repo.abc_repo import AbstractRepository
 from app.src.orm.models.models import User
-from app.src.schemas.request.user_schema import UserCreate
+from app.src.schemas.request.user_update_schema import UserUpdate
 
 
 class UserRepository(AbstractRepository):
@@ -11,14 +12,13 @@ class UserRepository(AbstractRepository):
         query = select(self.model).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
-        user = UserCreate(
-            ds_id = result.ds_id,
-            avatar_url = result.avatar_url if result.avatar_url else "",
-            created_at = result.created_at,
-            nickname = result.nickname,
-            message_count = result.message_count,
-            level = result.level,
-            guild_id = result.guild_id
-        )
-        return user
+        if result:
+            return UserUpdate(
+                ds_id=result.ds_id,
+                avatar_url=result.avatar_url if result.avatar_url else "",
+                nickname=result.nickname,
+                message_count=result.message_count,
+                level=result.level,
+            )
+        return None
         

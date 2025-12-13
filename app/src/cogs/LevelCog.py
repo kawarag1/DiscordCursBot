@@ -22,7 +22,7 @@ class LevelCog(commands.Cog):
         async with async_session_factory() as session:
             async with session.begin():
                 user_service = UserService(session)
-                profile: UserCreate = await user_service.get_server_profile(message.author.id)
+                profile = await user_service.get_server_profile(message.author.id)
                 print(profile)
                 profile.message_count += 1
                 level = math.sqrt(profile.message_count)
