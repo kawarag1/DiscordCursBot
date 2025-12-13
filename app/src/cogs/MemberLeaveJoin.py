@@ -4,7 +4,6 @@ from datetime import datetime
 
 from app.src.services.user_service import UserService
 from app.src.orm.database.database import async_session_factory
-from app.src.schemas.request.server_user_schema import ServerUserCreate
 from app.src.schemas.request.user_schema import UserCreate
 
 class MemberLeaveJoin(commands.Cog):
@@ -59,7 +58,7 @@ class MemberLeaveJoin(commands.Cog):
             nickname = member.name,
             avatar_url = member.avatar.url if member.avatar else "",
             created_at = member.created_at.isoformat(),
-            message_count = 1,
+            message_count = 0,
             level = 1,
             guild_id = member.guild.id
         )
