@@ -31,22 +31,30 @@ class Guild(Base):
 
 class Messages(Base):
     __tablename__ = "Messages"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("Users.ds_id"))
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
+    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.ds_id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     content: Mapped[str] = mapped_column(Text)
-    has_images: Mapped[bool] = mapped_column(Boolean)
-    image_url: Mapped[Optional[str]] = mapped_column(String(512))
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
 
     users: Mapped["User"] = relationship("User", back_populates = "messages")
     guilds: Mapped["Guild"] = relationship("Guild", back_populates = "messages")
+    attachments: Mapped["Attachments"] = relationship("Attachments", back_populates = "messages")
+
+class Attachments(Base):
+    __tablename__ = "Attachments"
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
+    message_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Messages.id"))
+    url: Mapped[str] = mapped_column(String(512))
+    content_type: Mapped[str] = mapped_column(String(128))
+
+    messages: Mapped["Messages"] = relationship("Messages", back_populates = "attachments")
 
 
 class Log_entries(Base):
     __tablename__ = "Log_entries"
     id: Mapped[int] = mapped_column(Integer, primary_key = True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("Users.ds_id"))
+    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.ds_id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     action: Mapped[str] = mapped_column(String) #ban, mute, kick, role_add, voice_leave, member_join, member_leave
     target_id: Mapped[Optional[str]] = mapped_column(String)
