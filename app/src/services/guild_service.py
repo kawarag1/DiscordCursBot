@@ -1,9 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from disnake import Guild
+import disnake
 
 from app.src.orm.models.models import Guild as ModelGuild
-from app.src.schemas.request.guild_schema import GuildSchema
 
 class GuildService():
     def __init__(self, session: AsyncSession):
@@ -16,7 +15,7 @@ class GuildService():
         if guild is not None:
             return True
     
-    async def add_new_guild(self, guild: Guild):
+    async def add_new_guild(self, guild: disnake.Guild):
         new_guild = ModelGuild(
             id = guild.id,
             name = guild.name
