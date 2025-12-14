@@ -58,7 +58,7 @@ class MemberLeaveJoin(commands.Cog):
             nickname = member.name,
             avatar_url = member.avatar.url if member.avatar else "",
             created_at = member.created_at.isoformat(),
-            message_count = 0,
+            message_count = 1,
             level = 1,
             guild_id = member.guild.id
         )
