@@ -2,6 +2,9 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 
+from app.src.orm.database.database import async_session_factory
+from app.src.services.message_service import MessageService
+
 class MessageLogsCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -57,6 +60,11 @@ class MessageLogsCog(commands.Cog):
         if message.author.bot:
             return
         
+        async with async_session_factory() as session:
+            async with session.begin():
+                message_service = MessageService(session)
+                await message_service.add_message(message)
+
         log_chanell_id = self.bot.get_channel(self.log_chanell_id)
         if log_chanell_id:
             try:
