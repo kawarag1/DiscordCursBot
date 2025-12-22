@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.src.orm.database.repo.user_repo import UserRepository
+from app.src.database.repo.user_repo import UserRepository
 from app.src.schemas.request.user_schema import UserCreate
 
 
@@ -15,7 +15,8 @@ class UserService():
         await UserRepository(self.session).delete_by_DSid(ds_id)
 
     async def get_server_profile(self, ds_id: int):
-        return await UserRepository(self.session).get_by_ds_id(ds_id)
+        user = await UserRepository(self.session).get_by_ds_id(ds_id)
+        return UserCreate.model_validate(user)
 
     async def change_server_profile(self, user: UserCreate):
         await UserRepository(self.session).update_by_ds_id(user.ds_id, **user.model_dump())
