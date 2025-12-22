@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class UserCreate(BaseModel):
@@ -9,3 +9,5 @@ class UserCreate(BaseModel):
     message_count: int
     level: int
     guild_id: int
+
+    model_config = ConfigDict(from_attributes = True)

@@ -1,6 +1,8 @@
+import asyncio
 import disnake
 # from create_link import CreatePaymentLink
-from disnake.ext import commands
+from disnake.ext.commands import Bot
+
 import os
 
 from app.src.services.guild_service import GuildService
@@ -13,11 +15,20 @@ print(token)
 
 auto_delete_channels = set()
 
-bot = commands.Bot(
+bot: Bot = Bot(
     command_prefix = "!",
     intents = disnake.Intents.all(),
     activity = disnake.Game("Тестовый бот")
 )
+
+
+async def load_extensions() -> None:
+    for root, dirs, files in os.walk('app/src/cogs'):
+        for file in files:
+            if file.endswith('.py'):
+                path = os.path.join(root, file).replace('/', '.')[:-3]
+                bot.load_extension(path.replace('/', '.'))
+                print(f"{file} loaded")
 
 
 for filename in os.listdir("./app/src/cogs"):
@@ -36,12 +47,11 @@ async def on_ready():
                 if guild_check:
                     print("True")
                 else:
-                    await guild_service.add_new_guild(guild)
+                    await guild_service.add_new_guild(guild)  
 
+async def main() -> None:
+    await load_extensions()
+    bot.run(token)
 
-
-@bot.slash_command(name="ping", description="Проверить работу бота")
-async def ping(inter: disnake.ApplicationCommandInteraction):
-    await inter.response.send_message(f"Pong {round(bot.latency * 1000)}мс")    
-
-bot.run(token)
+if __name__ == "__main__":
+    asyncio.run(main())
