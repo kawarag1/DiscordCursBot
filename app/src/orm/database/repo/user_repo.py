@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
-from app.src.orm.models.models import User
+from app.src.orm.models.models import Attachments, User, Messages
 from app.src.schemas.request.user_update_schema import UserUpdate
 
 
@@ -21,4 +21,26 @@ class UserRepository(AbstractRepository):
                 level=result.level,
             )
         return None
+    
+    async def delete_messages_with_attachments(self, user_ds_id: int):
+        try:
+            select_msg_id = select(Messages.id).where(Messages.user_id == user_ds_id)
+            msg_ids_result = await self._session.execute(select_msg_id)
+            msg_ids = msg_ids_result.scalars().all()
+
+            if not msg_ids:
+                return 0
+            
+            delete_attachments = delete(Attachments).where(
+                Attachments.message_id.in_(msg_ids)
+            )
+            await self._session.execute(delete_attachments)
+
+            delete_messages = delete(Messages).where(Messages.user_id == user_ds_id)
+            resuls = await self._session.execute(delete_messages)
+
+            
+            
+        except Exception as e:
+            print(f"Ошибка при каскадном удалении: {e}")
         
