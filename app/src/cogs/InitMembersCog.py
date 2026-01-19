@@ -55,7 +55,7 @@ class InitMembersCog(commands.Cog):
                 await session.rollback()
                 print(f"❌ Ошибка инициализации: {e}")
 
-    @commands.slash_command(name="инициализировать", description="Принудительно инициализировать участников сервера")
+    @commands.slash_command(name="initialize", description="Принудительно инициализировать участников сервера")
     @commands.has_permissions(administrator=True)
     async def init_members(self, inter: disnake.ApplicationCommandInteraction):
         await inter.response.defer(ephemeral=True)

@@ -1,0 +1,37 @@
+from datetime import datetime
+import disnake
+from disnake.ext import commands
+
+class WelcomeCog(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self.welcome_channel_id = 1403031110971031756
+
+    async def create_welcome_embed(self) -> disnake.Embed:
+        embed = disnake.Embed(
+            title="🎉 Бот добавлен на сервер!",
+            description="Приветствую! Спасибо за добавление меня на ваш сервер!",
+            color=disnake.Color.green(),
+            timestamp=datetime.now()
+        )
+
+        embed.add_field(
+            name="📋 Начало работы",
+            value="• Используйте `/help` чтобы увидеть все команды",
+            inline=False
+        )
+
+        return embed
+    
+    @commands.Cog.listener()
+    async def on_guild_join(self):
+        welcome_channel = self.bot.get_channel(self.welcome_channel_id)
+        if welcome_channel:
+            embed = self.create_welcome_embed()
+            await welcome_channel.send(embed = embed)
+
+def setup(bot):
+    bot.add_cog(WelcomeCog(bot))
+    
+
+
