@@ -1,5 +1,4 @@
 import disnake
-# from create_link import CreatePaymentLink
 from disnake.ext import commands
 import os
 
