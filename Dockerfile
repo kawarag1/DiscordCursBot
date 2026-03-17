@@ -1,25 +1,19 @@
-FROM python:3.13-slim-bookworm AS prod
+FROM python:3.13.9-slim
 
-WORKDIR /app/src
-
-# Копируем файлы зависимостей
-COPY pyproject.toml poetry.lock ./
-
-# Устанавливаем зависимости
-RUN apt-get update && apt-get install -y gcc
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 
-RUN pip install poetry==2.1.3
+RUN pip install uv && \
+    uv --version
 
-RUN poetry install --no-root
+WORKDIR /app
 
-RUN poetry config virtualenvs.create false
+COPY pyproject.toml uv.lock* ./
 
-RUN apt-get purge -y gcc && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN uv sync
 
-# Копируем приложение
 COPY . .
 
 CMD ["python", "-m", "discordbottest"]

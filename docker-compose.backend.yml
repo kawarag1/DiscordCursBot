@@ -3,9 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: poetry run python main.py
+    command: uv run python main.py
     environment:
-      - POETRY_VIRTUALENVS_CREATE=false
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/app/src 
