@@ -20,7 +20,7 @@ class GuildService():
         new_guild = ModelGuild(
             id = guild.id,
             name = guild.name,
-            owner_id = guild.owner_id,
+            icon_hash = guild.icon.key if guild.icon else None,
         )
         self.session.add(new_guild)
         await self.session.commit()
