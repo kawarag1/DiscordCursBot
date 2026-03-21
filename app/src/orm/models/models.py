@@ -33,7 +33,7 @@ class Guild(Base):
     __tablename__ = "Guilds"
     id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
     name: Mapped[str] = mapped_column(String(256))
-    owner_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
+    owner_id: Mapped[Optional[BIGINT]] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
     icon_hash: Mapped[Optional[str]] = mapped_column(String(256))
     config_json: Mapped[Optional[str]] = mapped_column(Text)
 
