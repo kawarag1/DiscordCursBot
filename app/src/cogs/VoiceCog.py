@@ -1,7 +1,9 @@
 import disnake
 from disnake.ext import commands
 
-class VoiceCog(commands.Cog):
+from app.src.cogs.CheckCog import CommandCheckCog
+
+class VoiceCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.auto_delete_channels = set()
