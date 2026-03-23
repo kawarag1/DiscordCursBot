@@ -14,7 +14,7 @@ class CommandService:
         self.session = session
 
     async def disable_command(self, command: DisableCommandSchema):
-        await CommandRepository.create(**command.model_dump())
+        return await CommandRepository(self.session).create(**command.model_dump())
 
     async def enable_command(self, command: DisableCommandSchema):
         query = select(ModelCommand).filter(
@@ -30,7 +30,7 @@ class CommandService:
 
         result = await self.session.execute(query)
         await self.session.execute(delete_query)
-        self.session.commit()
+        await self.session.commit()
         return result.scalars().first()
     
     async def check_command(self, command: DisableCommandSchema):
