@@ -1,7 +1,9 @@
 import disnake
 from disnake.ext import commands
 
-class ClearCog(commands.Cog):
+from app.src.cogs.CheckCog import CommandCheckCog
+
+class ClearCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -22,9 +24,9 @@ class ClearCog(commands.Cog):
         
         await inter.response.defer(ephemeral=True)
 
-        deleted = await inter.channel.purge(limit=amount + 1)
+        deleted = await inter.channel.purge(limit=amount)
 
-        await inter.edit_original_response(content=f"✅ Удалено {len(deleted)-1} сообщений.")
+        await inter.edit_original_response(content=f"✅ Удалено {len(deleted)} сообщений.")
 
 def setup(bot):
     bot.add_cog(ClearCog(bot))
