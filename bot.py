@@ -17,14 +17,13 @@ bot = commands.Bot(
 )
 
 
+@bot.slash_command(name="ping", description="Проверить работу бота")
+async def ping(inter: disnake.ApplicationCommandInteraction):
+    await inter.response.send_message(f"Pong {round(bot.latency * 1000)}мс")  
+
 for filename in os.listdir("./app/src/cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"app.src.cogs.{filename[:-3]}")
 
-
-
-@bot.slash_command(name="ping", description="Проверить работу бота")
-async def ping(inter: disnake.ApplicationCommandInteraction):
-    await inter.response.send_message(f"Pong {round(bot.latency * 1000)}мс")    
 
 bot.run(token)
