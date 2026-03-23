@@ -2,11 +2,11 @@ import disnake
 import math
 from disnake.ext import commands
 
+from app.src.cogs.CheckCog import CommandCheckCog
 from app.src.orm.database.database import async_session_factory
-from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.user_service import UserService
 
-class LevelCog(commands.Cog):
+class LevelCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.welcome_channel_id = 1403031110971031756
