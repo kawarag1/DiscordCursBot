@@ -6,6 +6,12 @@ class Settings(BaseSettings):
     TOKEN: str
     CLIENT_ID: int
     CLIENT_SECRET: str
+    REDIRECT_URI: str   
+    AUTH_URI: str
+    TOKEN_URI: str
+    USER_URI: str
+
+    YM_TOKEN: str
 
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
@@ -14,7 +20,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     GMAIL_EMAIL: str
-    GMAIL_PASSWORD: str
+    GMAIL_PASSWORD: str    
 
     EMAIL_CONFIRM_CODE_TTL: int = 15
 
