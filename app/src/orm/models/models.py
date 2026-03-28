@@ -25,6 +25,7 @@ class Owner(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key = True)
     ds_id: Mapped[BIGINT] = mapped_column(BigInteger, unique = True)
     email: Mapped[Optional[str]] = mapped_column(String(256), unique = True)
+    refresh_token: Mapped[Optional[str]] = mapped_column(String(512))
 
     subscriptions: Mapped["Subscription"] = relationship("Subscription", back_populates = "owners")
     guilds: Mapped["Guild"] = relationship("Guild", back_populates = "owners")
