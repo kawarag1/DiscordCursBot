@@ -25,7 +25,7 @@ class OwnerService:
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                settings.token_uri,
+                settings.TOKEN_URI,
                 data=data,
                 headers={"Content-Type": "application/x-www-form-urlencoded"}
             )
@@ -39,7 +39,7 @@ class OwnerService:
     async def get_owner_info(self, access_token: str) -> OwnerSchema:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                settings.user_uri,
+                settings.USER_URI,
                 headers={"Authorization": f"Bearer {access_token}"}
             )
 
@@ -61,7 +61,7 @@ class OwnerService:
         """Обновление истекшего access_token"""
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                settings.token_uri,
+                settings.TOKEN_URI,
                 data={
                     "client_id": settings.CLIENT_ID,
                     "client_secret": settings.CLIENT_SECRET,
