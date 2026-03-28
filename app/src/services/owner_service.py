@@ -16,11 +16,11 @@ class OwnerService:
 
     async def exchange_code(self, code: str):
         data ={
-            "client_id": settings.client_id,
-            "client_secret": settings.client_secret,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
             "grant_type": "authorization_code",
             "code": code,
-            "redirect_uri": settings.redirect_uri
+            "redirect_uri": settings.REDIRECT_URI
         }
 
         async with httpx.AsyncClient() as client:
@@ -63,8 +63,8 @@ class OwnerService:
             response = await client.post(
                 settings.token_uri,
                 data={
-                    "client_id": settings.client_id,
-                    "client_secret": settings.client_secret,
+                    "client_id": settings.CLIENT_ID,
+                    "client_secret": settings.CLIENT_SECRET,
                     "grant_type": "refresh_token",
                     "refresh_token": refresh_token,
                 },
