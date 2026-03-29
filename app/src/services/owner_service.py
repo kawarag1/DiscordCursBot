@@ -53,7 +53,11 @@ class OwnerService:
             return int(user_data["id"])
 
     async def add_owner(self, owner_id: int, refresh_token: str) -> OwnerSchema:
-        return await OwnerRepository(self.session).create(ds_id=owner_id, refresh_token=refresh_token)
+        if await OwnerRepository(self.session).exists_by_ds_id(owner_id):
+            await OwnerRepository(self.session).update_refresh_token(owner_id, refresh_token)
+            return await OwnerRepository(self.session).get_by_ds_id(owner_id)
+        else:
+            return await OwnerRepository(self.session).create(ds_id=owner_id, refresh_token=refresh_token)
 
     @staticmethod
     async def refresh_access_token(refresh_token: str) -> DsTokenResponse:
