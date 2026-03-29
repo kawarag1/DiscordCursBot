@@ -12,6 +12,6 @@ router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
 @router.post("/get_owner", description="Авторизация владельца", response_model=OwnerSchema)
 async def exchange_code(code: CodeRequest, session: AsyncSession = Depends(get_session)):
-    owner_token = await OwnerService(session).exchange_code(code=code)
+    owner_token = await OwnerService(session).exchange_code(code=code.code)
     ds_id = await OwnerService(session).get_owner_info(owner_token.access_token)
     return await OwnerService(session).add_owner(ds_id, owner_token.refresh_token)
