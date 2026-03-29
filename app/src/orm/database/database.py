@@ -6,11 +6,13 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncEngine
 )
+import subprocess
+import sys
 
 from alembic.config import Config
 from alembic import command
 
-from ..models.models import Base
+from app.src.utils.logger import logger
 from app.src.settings.settings import settings
 
 async def get_engine() -> AsyncEngine:
@@ -28,14 +30,23 @@ async def get_session():
         finally:
             await session.close()
 
-async def create_tables():
+
+async def migrate():
+    print("Checking for database migrations...")
+    logger.info("Checking for database migrations...")
+
     try:
-        engine = await get_engine()
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            print("Migration successful")
+        # Запускаем alembic upgrade
+        result = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print(f"Migration failed: {result.stderr}")
+        else:
+            logger.info("Database migrations applied successfully")
+            print("Database migrations applied successfully")
     except Exception as e:
-        print("Не удалось создать таблицы. ", str(e))
+        print(f"Migration error: {e}")
+        logger.error(f"Migration error: {str(e)}")
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")

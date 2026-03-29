@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 
-from app.src.orm.database.database import create_tables, async_session_factory
+from app.src.orm.database.database import migrate, async_session_factory
 from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.guild_service import GuildService
 from app.src.services.user_service import UserService
@@ -13,7 +13,7 @@ class InitMembersCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        await create_tables()
+        await migrate()
         print(f"{self.bot.user} is activated!")
         for guild in self.bot.guilds:
             async with async_session_factory() as session:
