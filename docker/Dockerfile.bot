@@ -1,20 +1,46 @@
 FROM python:3.13.9-slim
 
+# Устанавливаем системные зависимости
 RUN apt-get update && apt-get install -y \
     curl \
+    ffmpeg \
+    libsodium-dev \
+    libopus0 \
+    python3-dev \
+    build-essential \
+    ca-certificates \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
+# Обновляем сертификаты
+RUN update-ca-certificates
 
-RUN pip install uv && \
+# Устанавливаем uv
+RUN pip install --no-cache-dir uv && \
     uv --version
 
 WORKDIR /app
 
-COPY ../pyproject.toml ./
-COPY ../uv.lock* ./
+# Копируем зависимости
+COPY pyproject.toml uv.lock* ./
 
-RUN uv sync
+# Устанавливаем зависимости с правильными флагами
+RUN uv sync --no-dev --no-cache
 
-COPY .. .
+# Копируем остальной код
+COPY . .
 
-CMD ["python", "bot.py"]
+# Проверяем установку FFmpeg
+RUN ffmpeg -version || echo "FFmpeg not found!"
+
+# Создаем пользователя для запуска бота (не root)
+RUN useradd -m -u 1000 botuser && chown -R botuser:botuser /app
+USER botuser
+
+# Переменные окружения для Python
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_NO_CACHE=1
+
+# Запускаем бота
+CMD ["python", "-u", "bot.py"]
