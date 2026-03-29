@@ -8,6 +8,8 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/app/src 
+    networks:
+      - my-shared-network 
 
 
   fastapi:
@@ -22,6 +24,8 @@ services:
       - 8000:8000
     depends_on:
       - discord_database
+    networks:
+      - my-shared-network
     
     
 
@@ -38,3 +42,9 @@ services:
       - 5555:5432
     volumes:
       - /var/lib/postgresql
+    networks:
+      - my-shared-network
+
+networks:
+  my-shared-network:
+    driver: bridge
