@@ -50,11 +50,10 @@ class OwnerService:
                 )
             
             user_data = response.json()
-            return OwnerSchema(id=user_data["id"]).model_dump()
+            return OwnerSchema(ds_id=user_data["id"], access_token=user_data["access_token"], refresh_token=user_data["refresh_token"]).model_dump()
 
-    async def add_owner(self, owner_id: int):
-        return await OwnerRepository(self.session).create(ds_id=owner_id)
-    
+    async def add_owner(self, owner: OwnerSchema,):
+        return await OwnerRepository(self.session).create(ds_id=owner.ds_id, refresh_token=owner.refresh_token)
 
     @staticmethod
     async def refresh_access_token(refresh_token: str) -> DsTokenResponse:
