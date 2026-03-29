@@ -1,6 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class OwnerSchema(BaseModel):
+    id: int
     ds_id: int
-    refresh_token: str
+    email: Optional[str]
+    refresh_token: Optional[str]
