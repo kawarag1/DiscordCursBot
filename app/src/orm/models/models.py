@@ -22,7 +22,7 @@ class User(Base):
 
 class Owner(Base):
     __tablename__ = "Owners"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
     ds_id: Mapped[BIGINT] = mapped_column(BigInteger, unique = True)
     email: Mapped[Optional[str]] = mapped_column(String(256), unique = True)
     refresh_token: Mapped[Optional[str]] = mapped_column(String(512))
