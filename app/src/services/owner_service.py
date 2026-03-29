@@ -36,7 +36,7 @@ class OwnerService:
             return DsTokenResponse(**token_data)
 
             
-    async def get_owner_info(self, access_token: str) -> OwnerSchema:
+    async def get_owner_info(self, access_token: str) -> int:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 settings.USER_URI,
@@ -50,7 +50,7 @@ class OwnerService:
                 )
             
             user_data = response.json()
-            return OwnerSchema(ds_id=user_data["id"]).model_dump()
+            return user_data["id"]
 
     async def add_owner(self, owner_id: int, refresh_token: str) -> OwnerSchema:
         return await OwnerRepository(self.session).create(ds_id=owner_id, refresh_token=refresh_token)
