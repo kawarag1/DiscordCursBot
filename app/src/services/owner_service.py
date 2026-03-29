@@ -53,7 +53,7 @@ class OwnerService:
             return OwnerSchema(id=user_data["id"]).model_dump()
 
     async def add_owner(self, owner_id: int):
-        return await OwnerRepository(self.session).create(id=owner_id)
+        return await OwnerRepository(self.session).create(ds_id=owner_id)
     
 
     @staticmethod
