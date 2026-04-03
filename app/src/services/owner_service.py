@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import httpx
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
@@ -54,9 +54,12 @@ class OwnerService:
             user_data = response.json()
             return int(user_data["id"])
 
-    async def add_owner(self, owner_id: int, access_token:str, refresh_token: str, session_token: str, expires_at: datetime) -> OwnerSchema:
+    async def add_owner(self, owner_id: int, access_token:str, refresh_token: str, session_token: str, expires_at: int | datetime) -> OwnerSchema:
+        if isinstance(expires_at, int):
+            expires_at = datetime.fromtimestamp(expires_at, tz=timezone.utc)
+
         if await OwnerRepository(self.session).exists_by_ds_id(owner_id):
-            await OwnerRepository(self.session).update_refresh_token(owner_id, refresh_token)
+            await OwnerRepository(self.session).update_refresh_token(owner_id, access_token, refresh_token, session_token, expires_at)
             return await OwnerRepository(self.session).get_by_ds_id(owner_id)
         else:
             return await OwnerRepository(self.session).create(ds_id=owner_id, access_token=access_token, refresh_token=refresh_token, session_token=session_token, expires_at=expires_at)
