@@ -6,3 +6,5 @@ class DsTokenResponse(BaseModel):
     expires_in: int
     refresh_token: str
     scope: str
+    session_token: str
+    expires_at: int
