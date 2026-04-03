@@ -1,6 +1,8 @@
 from typing import Any, Dict
 
 import httpx
+import secrets
+from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
@@ -33,7 +35,7 @@ class OwnerService:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to get token: {response.text}")
             token_data = response.json()
 
-            return DsTokenResponse(**token_data)
+            return DsTokenResponse(**token_data, session_token=secrets.token_urlsafe(32), expires_at=int((datetime.utcnow() + timedelta(seconds=token_data['expires_in'])).timestamp()))
 
             
     async def get_owner_info(self, access_token: str) -> int:
@@ -52,12 +54,12 @@ class OwnerService:
             user_data = response.json()
             return int(user_data["id"])
 
-    async def add_owner(self, owner_id: int, refresh_token: str) -> OwnerSchema:
+    async def add_owner(self, owner_id: int, access_token:str, refresh_token: str, session_token: str, expires_at: datetime) -> OwnerSchema:
         if await OwnerRepository(self.session).exists_by_ds_id(owner_id):
             await OwnerRepository(self.session).update_refresh_token(owner_id, refresh_token)
             return await OwnerRepository(self.session).get_by_ds_id(owner_id)
         else:
-            return await OwnerRepository(self.session).create(ds_id=owner_id, refresh_token=refresh_token)
+            return await OwnerRepository(self.session).create(ds_id=owner_id, access_token=access_token, refresh_token=refresh_token, session_token=session_token, expires_at=expires_at)
 
     @staticmethod
     async def refresh_access_token(refresh_token: str) -> DsTokenResponse:
@@ -82,6 +84,8 @@ class OwnerService:
             
             token_data = response.json()
             return DsTokenResponse(**token_data)
+        
+    
 
 
     
