@@ -14,4 +14,4 @@ router = APIRouter(prefix="/auth", tags=["Авторизация"])
 async def exchange_code(code: CodeRequest, session: AsyncSession = Depends(get_session)):
     owner_token = await OwnerService(session).exchange_code(code=code.code)
     ds_id = await OwnerService(session).get_owner_info(owner_token.access_token)
-    return await OwnerService(session).add_owner(ds_id, owner_token.refresh_token)
+    return await OwnerService(session).add_owner(ds_id, owner_token.access_token, owner_token.refresh_token, owner_token.session_token, owner_token.expires_at)
