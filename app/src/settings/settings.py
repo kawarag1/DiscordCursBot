@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     AUTH_URI: str
     TOKEN_URI: str
     USER_URI: str
+    GUILDS_URI: str
 
     YM_TOKEN: str
 
