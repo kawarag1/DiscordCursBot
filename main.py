@@ -11,7 +11,8 @@ app = FastAPI(
     description="Этот API позволяет управлять подписками на бота, включая создание, обновление и удаление подписок.",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    root_path="/api"
 )
 
 app.add_middleware(
