@@ -32,4 +32,4 @@ async def refresh_session_token(owner: OwnerSchema = Depends(get_current_owner),
 
 @router.get("/guilds", dependencies=[Depends(session_auth)], description="Получение списка серверов владельца")
 async def get_guilds(owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
-    return await OwnerService(session).get_user_guilds(owner=owner)
+    return await OwnerService(session).get_owned_guilds(owner=owner)
