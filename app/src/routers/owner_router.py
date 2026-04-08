@@ -35,7 +35,7 @@ async def refresh_session_token(response: Response, owner: OwnerSchema = Depends
         httponly=True,
         secure=False,
         samesite="lax",
-        max_age=owner_.expires_in)
+        max_age=owner_.expires_at)
     return owner_
 
 @router.get("/guilds", dependencies=[Depends(session_auth)], description="Получение списка серверов владельца")
