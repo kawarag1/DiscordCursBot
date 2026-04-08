@@ -27,8 +27,16 @@ async def exchange_code(code: CodeRequest, response: Response, session: AsyncSes
 
 
 @router.post("/refresh_session_token", dependencies=[Depends(session_auth)],description="Обновление сессионного токена", response_model=OwnerSchema)
-async def refresh_session_token(owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
-    return await OwnerService(session).refresh_session_token(session_token=owner.session_token)
+async def refresh_session_token(response: Response, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
+    owner_ = await OwnerService(session).refresh_session_token(session_token=owner.session_token)
+    response.set_cookie(
+        key="session_token",
+        value=owner_.session_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=owner_.expires_in)
+    return owner_
 
 @router.get("/guilds", dependencies=[Depends(session_auth)], description="Получение списка серверов владельца")
 async def get_guilds(owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
