@@ -17,7 +17,10 @@ class OwnerRepository(AbstractRepository):
                 id=result.id,
                 ds_id=result.ds_id,
                 email=result.email if result.email else "",
-                refresh_token=result.refresh_token
+                access_token=result.access_token if result.access_token else "",
+                refresh_token=result.refresh_token if result.refresh_token else "",
+                session_token=result.session_token if result.session_token else "",
+                expires_at=int(result.expires_at.timestamp()) if result.expires_at else None
             )
         return None
 
@@ -35,3 +38,19 @@ class OwnerRepository(AbstractRepository):
         )
         await self._session.execute(query)
         await self.commit()
+
+    async def get_by_session_token(self, session_token: str):
+        query = select(self.model).where(self.model.session_token == session_token)
+        result_ = await self._session.execute(query)
+        result = result_.scalars().first()
+        if result:
+            return OwnerSchema(
+                id=result.id,
+                ds_id=result.ds_id,
+                email=result.email if result.email else "",
+                access_token=result.access_token if result.access_token else "",
+                refresh_token=result.refresh_token if result.refresh_token else "",
+                session_token=result.session_token if result.session_token else "",
+                expires_at=int(result.expires_at.timestamp()) if result.expires_at else None
+            )
+        return None
