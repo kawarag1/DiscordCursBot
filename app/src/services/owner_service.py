@@ -87,8 +87,82 @@ class OwnerService:
             
             token_data = response.json()
             return DsTokenResponse(**token_data)
-        
     
+    async def check_session_token(self, session_token: str, expires_at: int | datetime) -> OwnerSchema:
+        if expires_at > datetime.now(tz=timezone.utc).timestamp():
+            owner = await OwnerRepository(self.session).get_by_session_token(session_token)
+            if not owner:
+                self.refresh_session_token(session_token)
+                return owner
+            return owner
 
+    async def refresh_session_token(self, session_token: str) -> OwnerSchema:
+        owner = await OwnerRepository(self.session).get_by_session_token(session_token)
+        if not owner:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found")
+
+        new_session_token = secrets.token_urlsafe(32)
+        await OwnerRepository(self.session).update_refresh_token(
+            ds_id=owner.ds_id,
+            access_token=owner.access_token,
+            refresh_token=owner.refresh_token,
+            session_token=new_session_token,
+            expires_at=datetime.fromtimestamp(owner.expires_at, tz=timezone.utc) if owner.expires_at else None
+        )
+        return await OwnerRepository(self.session).get_by_session_token(new_session_token)
+
+    async def get_user_guilds(self, owner: OwnerSchema) -> list:
+        
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                settings.GUILDS_URI,
+                headers={"Authorization": f"Bearer {owner.access_token}"}
+            )
+
+            if response.status_code == 401:
+                # Access token истек, пробуем обновить
+                new_tokens = await self.refresh_access_token(owner.refresh_token)
+                await OwnerRepository(self.session).update_refresh_token(
+                    ds_id=owner.ds_id,
+                    access_token=new_tokens.access_token,
+                    refresh_token=new_tokens.refresh_token,
+                    session_token=owner.session_token,
+                    expires_at=datetime.fromtimestamp(new_tokens.expires_at, tz=timezone.utc)
+                )
+                # Повторяем запрос с новым access token
+                response = await client.get(
+                    settings.GUILDS_URI,
+                    headers={"Authorization": f"Bearer {new_tokens.access_token}"}
+                )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Failed to get guilds: {response.text}"
+                )
+            
+            return response.json()
+        
+    async def get_owned_guilds(self, owner: OwnerSchema) -> Dict[str, Any]:
+        guilds = await self.get_user_guilds(owner)
+        
+        owned_guilds = []
+        for guild in guilds:
+            if guild.get("owner") == True:
+                owned_guilds.append({
+                    "id": int(guild["id"]),
+                    "name": guild["name"],
+                    "icon_url": (
+                        f"https://cdn.discordapp.com/icons/{guild['id']}/{guild['icon']}.png" 
+                        if guild.get("icon") 
+                        else None
+                    ),
+                    "permissions": guild.get("permissions"),
+                    "approximate_member_count": guild.get("approximate_member_count", 0)
+                })
+            
+        owned_guilds.sort(key=lambda x: x["name"].lower())
+        return owned_guilds
 
     
