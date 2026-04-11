@@ -44,7 +44,20 @@ class GuildService():
             )
 
             if response.status_code == 401:
-                new_tokens = await OwnerService.refresh_access_token(owner.refresh_token)
+                if not owner.refresh_token:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Discord session expired. Please login again."
+                    )
+
+                try:
+                    new_tokens = await OwnerService.refresh_access_token(owner.refresh_token)
+                except HTTPException:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Discord session expired. Please login again."
+                    )
+
                 await OwnerRepository(self.session).update_refresh_token(
                     ds_id=owner.ds_id,
                     access_token=new_tokens.access_token,
@@ -59,8 +72,8 @@ class GuildService():
 
             if response.status_code != 200:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Failed to get guilds: {response.text}"
+                    status_code=response.status_code,
+                    detail=f"Failed to get guilds from Discord: {response.text}"
                 )
             
             return response.json()
