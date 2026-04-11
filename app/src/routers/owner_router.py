@@ -37,3 +37,7 @@ async def refresh_session_token(response: Response, owner: OwnerSchema = Depends
         samesite="lax",
         max_age=owner_.expires_at)
     return owner_
+
+@router.get("/me", dependencies=[Depends(session_auth)], description="Получение информации о владельце", response_model=OwnerSchema)
+async def get_current_owner_info(owner: OwnerSchema = Depends(get_current_owner)):
+    return owner
