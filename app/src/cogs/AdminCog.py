@@ -114,4 +114,6 @@ class AdminCog(commands.Cog):
         )
         
         await inter.response.send_message(embed=embed)
-        
+
+def setup(bot):
+    pass
