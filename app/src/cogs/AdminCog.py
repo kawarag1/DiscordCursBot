@@ -94,7 +94,7 @@ class AdminCog(commands.Cog):
             )
             return
         
-        ban_entries = await inter.guild.bans()
+        ban_entries = await inter.guild.bans().flatten()
         
         target_user = None
         for ban_entry in ban_entries:
