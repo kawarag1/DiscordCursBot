@@ -124,7 +124,7 @@ class Log_entries(Base):
     user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.ds_id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     action: Mapped[str] = mapped_column(String) #ban, mute, kick, role_add, voice_leave, member_join, member_leave
-    target_id: Mapped[Optional[str]] = mapped_column(String)
+    target_id: Mapped[BIGINT] = mapped_column(BigInteger)
     reason: Mapped[str] = mapped_column(Text)
     details: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
