@@ -77,7 +77,7 @@ class AdminCog(commands.Cog):
         
         await inter.response.send_message(embed=embed)
     
-    @commands.slash_command(name="unban", description="Разбанить пользователя")
+    @commands.slash_command(name="unban", description="Разблокировать пользователя")
     @commands.has_permissions(ban_members=True)
     async def unban(
         self,
@@ -121,17 +121,17 @@ class AdminCog(commands.Cog):
                             guild_id=inter.guild.id,
                             user_id=inter.author.id,
                             action="unban",
-                            reason="Снятие бана",
+                            reason="Снятие блокировки",
                             target_id=user_id_int,
                             details=f"Снят модератором {inter.author}",
                             created_at=datetime.utcnow()
                         )
                     )
         except Exception as e:
-            print(f"❌ Ошибка при логировании снятия бана: {e}")
+            print(f"❌ Ошибка при логировании снятия блокировки: {e}")
         
         embed = disnake.Embed(
-            title="✅ Бан снят",
+            title="✅ Блокировка снята",
             description=f"**Пользователь:** {target_user.mention}\n"
                        f"**ID:** {target_user.id}\n"
                        f"**Модератор:** {inter.author.mention}",
