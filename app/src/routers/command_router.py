@@ -16,6 +16,6 @@ async def disable_command(command: DisableCommandSchema, session: AsyncSession =
 async def enable_command(command: DisableCommandSchema, session: AsyncSession = Depends(get_session)):
     return await CommandService(session).enable_command(command)
 
-@router.get("/get_commands/{guild_id}", description="Получить отключенные команды бота на сервере", response_model=list[DisableCommandSchema])
+@router.get("/get_commands/{guild_id}", description="Получить отключенные команды бота на сервере", response_model=list[str])
 async def get_commands(guild_id: str, session: AsyncSession = Depends(get_session)):
     return await CommandService(session).get_commands(int(guild_id))
