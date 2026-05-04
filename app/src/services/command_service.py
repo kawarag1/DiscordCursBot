@@ -46,3 +46,8 @@ class CommandService:
         
         return not result.scalar()
     
+    async def get_commands(self, guild_id: int):
+        query = select(ModelCommand).filter(ModelCommand.guild_id == guild_id)
+        result = await self.session.execute(query)
+        return result.scalars().all()
+    
