@@ -13,3 +13,7 @@ router = APIRouter(prefix="/guilds", tags=["Сервера"])
 @router.get("/guilds", dependencies=[Depends(session_auth)], description="Получение списка серверов владельца", response_model=list[GuildSchema])
 async def get_guilds(owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
     return await GuildService(session).get_owned_guilds(owner=owner)
+
+@router.get("/guilds/{guild_id}", dependencies=[Depends(session_auth)], description="Проверка наличия сервера в базе данных", response_model=bool)
+async def check_guild(guild_id: int, session: AsyncSession = Depends(get_session)):
+    return await GuildService(session).check_guild_by_id(guild_id)
