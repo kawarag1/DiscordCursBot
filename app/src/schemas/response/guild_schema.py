@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class GuildSchema(BaseModel):
-    id: int
+    id: str
     name: str
     icon_url: str | None
     
