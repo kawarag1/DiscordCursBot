@@ -86,7 +86,7 @@ class GuildService():
             if guild.get("owner") == True:
                 owned_guilds.append(
                     GuildSchema(
-                        id=int(guild["id"]),
+                        id=str(guild["id"]),
                         name=guild["name"],
                         icon_url=(
                             f"https://cdn.discordapp.com/icons/{guild['id']}/{guild['icon']}.png"
