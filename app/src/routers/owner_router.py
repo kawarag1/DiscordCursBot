@@ -25,6 +25,10 @@ async def exchange_code(code: CodeRequest, response: Response, session: AsyncSes
         max_age=owner_token.expires_in)
     return await OwnerService(session).add_owner(ds_id, owner_token.access_token, owner_token.refresh_token, owner_token.session_token, owner_token.expires_at)
 
+@router.post("/logout", dependencies=[Depends(session_auth)], description="Выход из аккаунта")
+async def logout(response: Response, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
+    response.delete_cookie("session_token")
+    return {"detail": "Successfully logged out"}
 
 @router.post("/refresh_session_token", dependencies=[Depends(session_auth)],description="Обновление сессионного токена", response_model=OwnerSchema)
 async def refresh_session_token(response: Response, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
