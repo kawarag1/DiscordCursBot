@@ -22,7 +22,7 @@ class AbstractRepository(ABC):
     async def rollback(self):
         await self._session.rollback()
 
-    async def get_by_id(self, id):
+    async def get_by_id(self, id: int):
         return await self._session.get(self.model, id)
 
     async def get_all(self):
