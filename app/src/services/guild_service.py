@@ -78,11 +78,11 @@ class GuildService():
             
             return response.json()
         
-    async def get_users_on_guilds(self, owner: OwnerSchema, guild_id: int):
+    async def get_users_on_guilds(self, guild_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 settings.GUILD_MEMBERS_URI.format(guild_id=guild_id),
-                headers={"Authorization": f"Bearer {owner.access_token}"}
+                headers={"Authorization": f"Bot {settings.TOKEN}"}
             )
 
             if response.status_code != 200:
@@ -109,7 +109,7 @@ class GuildService():
                             if guild.get("icon")
                             else None
                         ),
-                        approximate_member_count=await self.get_users_on_guilds(owner, int(guild["id"]))
+                        approximate_member_count=await self.get_users_on_guilds(int(guild["id"]))
                     )
                 )
             
