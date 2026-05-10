@@ -82,7 +82,7 @@ class GuildService():
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 settings.GUILD_MEMBERS_URI.format(guild_id=guild_id),
-                headers={"Authorization": f"Bot {owner.access_token}"}
+                headers={"Authorization": f"Bearer {owner.access_token}"}
             )
 
             if response.status_code != 200:
