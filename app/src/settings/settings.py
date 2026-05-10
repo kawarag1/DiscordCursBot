@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     TOKEN_URI: str
     USER_URI: str
     GUILDS_URI: str
+    GUILD_MEMBERS_URI: str
 
     YM_TOKEN: str
 
