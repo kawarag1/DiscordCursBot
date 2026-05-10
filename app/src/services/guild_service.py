@@ -78,7 +78,7 @@ class GuildService():
             
             return response.json()
         
-    async def get_users_on_guilds(guild_id: int):
+    async def get_users_on_guilds(self, guild_id: int):
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 settings.GUILD_MEMBERS_URI.format(guild_id=guild_id),
