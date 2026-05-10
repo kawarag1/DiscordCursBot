@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.owner_service import OwnerService
 from app.src.settings.settings import settings
 from app.src.orm.database.repo.owner_repo import OwnerRepository
@@ -114,3 +115,23 @@ class GuildService():
                 )
             
             return response.json()
+    
+    async def return_guild_members(self, guild_id: int) -> list[MemberSchema]:
+        members_ = await self.get_guild_members(guild_id)
+
+        members: list[MemberSchema] = []
+
+        for member in members_:
+            members.append(MemberSchema(
+                id=str(member["user"]["id"]),
+                username=member["user"]["username"],
+                avatar_url=(
+                    f"https://cdn.discordapp.com/avatars/{member['user']['id']}/{member['user']['avatar']}.png"
+                    if member["user"].get("avatar")
+                    else None
+                ),
+                roles=member.get("roles")
+            ))
+
+        return members
+            
