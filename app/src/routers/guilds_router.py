@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.src.orm.database.database import get_session
 from app.src.schemas.response.guild_schema import GuildSchema
+from app.src.schemas.response.member_schema import MemberSchema
 from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.security.session_auth_token import session_auth
 from app.src.security.oauth import get_current_owner
@@ -18,6 +19,6 @@ async def get_guilds(owner: OwnerSchema = Depends(get_current_owner), session: A
 async def check_guild(guild_id: str, session: AsyncSession = Depends(get_session)):
     return await GuildService(session).check_guild_by_id(int(guild_id))
 
-@router.get("/guilds/{guild_id}/members", dependencies=[Depends(session_auth)], description="Получение списка участников сервера", response_model=list)
+@router.get("/guilds/{guild_id}/members", dependencies=[Depends(session_auth)], description="Получение списка участников сервера", response_model=list[MemberSchema])
 async def get_guild_members(guild_id: str, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
-    return await GuildService(session).get_guild_members(int(guild_id))
+    return await GuildService(session).return_guild_members(int(guild_id))
