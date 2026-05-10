@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-class BanSchema(BaseModel):
+class ActionSchema(BaseModel):
     user_id: int
     guild_id: int
     action: str

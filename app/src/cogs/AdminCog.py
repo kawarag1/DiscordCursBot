@@ -3,8 +3,8 @@ from datetime import datetime
 import disnake
 from disnake.ext import commands
 
-from app.src.schemas.request.action_schema import BanSchema
-from app.src.services.ban_service import BanService
+from app.src.schemas.request.action_schema import ActionSchema
+from app.src.services.action_service import ActionService
 from app.src.orm.database.database import async_session_factory
 
 
@@ -47,9 +47,9 @@ class AdminCog(commands.Cog):
         try:
             async with async_session_factory() as session:
                 async with session.begin():
-                    ban_service = BanService(session)
-                    await ban_service.log_ban(
-                        BanSchema(
+                    action_service = ActionService(session)
+                    await action_service.log_action(
+                        ActionSchema(
                             guild_id=inter.guild.id,
                             user_id=inter.author.id,
                             action="ban",
@@ -115,9 +115,9 @@ class AdminCog(commands.Cog):
         try:
             async with async_session_factory() as session:
                 async with session.begin():
-                    ban_service = BanService(session)
-                    await ban_service.log_ban(
-                        BanSchema(
+                    action_service = ActionService(session)
+                    await action_service.log_action(
+                        ActionSchema(
                             guild_id=inter.guild.id,
                             user_id=inter.author.id,
                             action="unban",
@@ -140,6 +140,70 @@ class AdminCog(commands.Cog):
         )
         
         await inter.response.send_message(embed=embed)
+
+    @commands.slash_command(name="kick", description="Исключить пользователя")
+    @commands.has_permissions(kick_members=True)
+    async def kick(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        user: disnake.Member,
+        reason: str = commands.Param(description="Причина исключения", max_length=100)
+    ):
+        
+        if user == inter.author:
+            await inter.response.send_message(
+                "❌ Вы не можете исключить самого себя!",
+                ephemeral=True
+            )
+            return
+        
+        if user.guild_permissions.administrator:
+            await inter.response.send_message(
+                "❌ Вы не можете исключить администратора сервера!",
+                ephemeral=True
+            )
+            return
+        
+        if user.top_role >= inter.author.top_role:
+            await inter.response.send_message(
+                "❌ Вы не можете исключить пользователя с ролью выше или равной вашей!",
+                ephemeral=True
+            )
+            return
+
+        
+        try:
+            async with async_session_factory() as session:
+                async with session.begin():
+                    action_service = ActionService(session)
+                    await action_service.log_action(
+                        ActionSchema(
+                            guild_id=inter.guild.id,
+                            user_id=inter.author.id,
+                            action="kick",
+                            reason=reason,
+                            target_id=user.id,
+                            details=f"",
+                            created_at=datetime.utcnow()
+                        )
+                    )
+        except Exception as e:
+            print(f"❌ Ошибка при логировании исключения: {e}")
+        
+        await inter.guild.kick(user, reason=f"{reason} | Исключен: {inter.author}")
+        
+        embed = disnake.Embed(
+            title="✅ Пользователь исключен",
+            description=f"**Пользователь:** {user.mention}\n"
+                       f"**ID:** {user.id}\n"
+                       f"**Причина:** {reason}\n"
+                       f"**Модератор:** {inter.author.mention}",
+            color=disnake.Color.green(),
+            timestamp=datetime.utcnow()
+        )
+        
+        await inter.response.send_message(embed=embed)
+
 
 
 def setup(bot):
