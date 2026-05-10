@@ -84,7 +84,6 @@ class GuildService():
         owned_guilds: list[GuildSchema] = []
         for guild in guilds:
             if guild.get("owner") == True:
-                print(guild["id"])
                 owned_guilds.append(
                     GuildSchema(
                         id=str(guild.get("id")),
@@ -100,3 +99,18 @@ class GuildService():
             
         owned_guilds.sort(key=lambda x: x.name.lower())
         return owned_guilds
+    
+    async def get_guild_members(self, guild_id: int):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                settings.GUILD_MEMBERS_URI.format(guild_id=int(guild_id)),
+                headers={"Authorization": f"Bot {settings.BOT_TOKEN}"}
+            )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Failed to get guild members from Discord: {response.text}"
+                )
+            
+            return response.json()

@@ -17,3 +17,7 @@ async def get_guilds(owner: OwnerSchema = Depends(get_current_owner), session: A
 @router.get("/guilds/{guild_id}", dependencies=[Depends(session_auth)], description="Проверка наличия сервера в базе данных", response_model=bool)
 async def check_guild(guild_id: str, session: AsyncSession = Depends(get_session)):
     return await GuildService(session).check_guild_by_id(int(guild_id))
+
+@router.get("/guilds/{guild_id}/members", dependencies=[Depends(session_auth)], description="Получение списка участников сервера", response_model=list)
+async def get_guild_members(guild_id: str, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
+    return await GuildService(session).get_guild_members(int(guild_id))
