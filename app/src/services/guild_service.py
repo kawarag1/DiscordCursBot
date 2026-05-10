@@ -122,12 +122,15 @@ class GuildService():
         members: list[MemberSchema] = []
 
         for member in members_:
+            user_data = member.get("user", {})
+            if user_data.get("bot"):
+                continue
             members.append(MemberSchema(
-                id=str(member["user"]["id"]),
-                username=member["user"]["username"],
+                id=str(user_data.get("id")),
+                username=user_data.get("username"),
                 avatar_url=(
-                    f"https://cdn.discordapp.com/avatars/{member['user']['id']}/{member['user']['avatar']}.png"
-                    if member["user"].get("avatar")
+                    f"https://cdn.discordapp.com/avatars/{user_data['id']}/{user_data['avatar']}.png"
+                    if user_data.get("avatar")
                     else None
                 ),
                 roles=member.get("roles")
