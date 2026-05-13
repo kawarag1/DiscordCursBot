@@ -138,3 +138,28 @@ class GuildService():
 
         return members
             
+    async def kick_member(self, guild_id: int, user_id: int):
+        async with httpx.AsyncClient() as client:
+            response = await client.delete(
+                settings.KICK_URI.format(guild_id=guild_id, user_id=user_id),
+                headers={"Authorization": f"Bot {settings.TOKEN}"}
+            )
+
+            if response.status_code != 204:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Failed to kick member from Discord: {response.text}"
+                )
+
+    async def ban_member(self, guild_id: int, user_id: int):
+        async with httpx.AsyncClient() as client:
+            response = await client.put(
+                settings.BAN_URI.format(guild_id=guild_id, user_id=user_id),
+                headers={"Authorization": f"Bot {settings.TOKEN}"}
+            )
+
+            if response.status_code != 204:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Failed to ban member from Discord: {response.text}"
+                )
