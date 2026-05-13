@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     USER_URI: str
     GUILDS_URI: str
     GUILD_MEMBERS_URI: str
+    KICK_URI: str
+    BAN_URI: str
 
     YM_TOKEN: str
 
