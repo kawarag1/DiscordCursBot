@@ -27,10 +27,10 @@ async def get_guild_members(guild_id: str, owner: OwnerSchema = Depends(get_curr
 @router.put("/guilds/{guild_id}/bans/{user_id}", dependencies=[Depends(session_auth)], description="Заблокировать участника на сервере")
 async def ban_member(guild_id: str, user_id: str, ban_data: BanSchema, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
     if ban_data.delete_user_messages:
-        await GuildService(session).ban_member_with_message_deletion(int(guild_id), int(user_id), ban_data.reason)
+        await GuildService(session).ban_member_with_message_deletion(owner.id, int(guild_id), int(user_id), ban_data.reason)
     else:
-        await GuildService(session).ban_member(int(guild_id), int(user_id), ban_data.reason)
+        await GuildService(session).ban_member(owner.id, int(guild_id), int(user_id), ban_data.reason)
 
 @router.delete("/guilds/{guild_id}/members/{user_id}", dependencies=[Depends(session_auth)], description="Исключить участника с сервера")
-async def kick_member(guild_id: str, user_id: str, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
-    await GuildService(session).kick_member(int(guild_id), int(user_id))
+async def kick_member(guild_id: str, user_id: str, ban_data: BanSchema, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
+    await GuildService(session).kick_member(owner.id, int(guild_id), int(user_id), ban_data.reason)
