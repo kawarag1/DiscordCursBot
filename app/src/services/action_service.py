@@ -49,6 +49,8 @@ class ActionService:
                         else None
                     )
                 ),
+                guild_id=action.guild_id,
+                action=action.action,
                 reason=action.reason,
                 details=action.details,
                 created_at=action.created_at
