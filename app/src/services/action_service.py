@@ -37,7 +37,7 @@ class ActionService:
 
             actions.append(ResponceActionSchema(
                 id=action.id,
-                user_id=MemberActionSchema(
+                user=MemberActionSchema(
                     username=user_data.get("username") if user_data else "Unknown User",
                     avatar_url=(
                         f"https://cdn.discordapp.com/avatars/{user_data.get('id')}/{user_data.get('avatar')}.png"
@@ -45,7 +45,7 @@ class ActionService:
                         else None
                     )
                 ),
-                target_id=MemberActionSchema(
+                target=MemberActionSchema(
                     username=target_data.get("username") if target_data else "Unknown User",
                     avatar_url=(
                         f"https://cdn.discordapp.com/avatars/{target_data.get('id')}/{target_data.get('avatar')}.png"
