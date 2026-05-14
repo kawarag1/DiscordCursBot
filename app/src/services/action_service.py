@@ -5,6 +5,7 @@ from app.src.orm.database.repo.log_repo import LogRepository
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.action_schema import MemberActionSchema, ActionSchema as ResponceActionSchema
 from app.src.schemas.response.raw_action_schema import RawActionSchema
+from app.src.settings import settings
 
 
 class ActionService:
@@ -17,9 +18,12 @@ class ActionService:
     async def get_raw_actions(self, guild_id: int) -> list[RawActionSchema]:
         return await LogRepository(self.session).get_by_guild_id(guild_id)
 
-    async def get_user_by_id(self, user_id: int):
+    async def get_user_by_id(self, user_id: str):
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"https://discord.com/api/users/{user_id}")
+            response = await client.get(
+                f"https://discord.com/api/users/{user_id}",
+                headers={"Authorization": f"Bot {settings.BOT_TOKEN}"}
+            )
             if response.status_code == 200:
                 return response.json()
             return None
