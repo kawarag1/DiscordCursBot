@@ -1,5 +1,6 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException, status
 
 from app.src.orm.database.repo.log_repo import LogRepository
 from app.src.schemas.request.action_schema import ActionSchema
@@ -26,7 +27,11 @@ class ActionService:
             )
             if response.status_code == 200:
                 return response.json()
-            return None
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Unknown user: {response.text}"
+                )
     
     async def get_actions(self, guild_id: int) -> list[ResponceActionSchema]:
         raw_actions = await self.get_raw_actions(guild_id)
