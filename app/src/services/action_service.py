@@ -5,7 +5,7 @@ from app.src.orm.database.repo.log_repo import LogRepository
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.action_schema import MemberActionSchema, ActionSchema as ResponceActionSchema
 from app.src.schemas.response.raw_action_schema import RawActionSchema
-from app.src.settings import settings
+from app.src.settings.settings import settings
 
 
 class ActionService:
