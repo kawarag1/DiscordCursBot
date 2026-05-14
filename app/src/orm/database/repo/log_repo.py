@@ -5,6 +5,6 @@ class LogRepository(AbstractRepository):
     model = Log_entries
 
     async def get_by_guild_id(self, guild_id: int):
-        query = self._session.query(self.model).filter_by(guild_id=guild_id)
+        query = self._session.select(self.model).filter_by(guild_id=guild_id)
         result = await self._session.execute(query)
         return result.scalars().all()
