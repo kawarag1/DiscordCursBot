@@ -22,7 +22,7 @@ class ActionService:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"https://discord.com/api/users/{user_id}",
-                headers={"Authorization": f"Bot {settings.BOT_TOKEN}"}
+                headers={"Authorization": f"Bot {settings.TOKEN}"}
             )
             if response.status_code == 200:
                 return response.json()
