@@ -13,3 +13,7 @@ router = APIRouter(prefix="/actions", tags=["Действия на сервер�
 @router.get("/{guild_id}", dependencies=[Depends(session_auth)], description="Получение списка действий на сервере", response_model=list[ActionSchema])
 async def get_actions(guild_id: str, owner = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
     return await ActionService(session).get_actions(int(guild_id))
+
+@router.get("/user/{user_id}")
+async def get_user(user_id: str, session: AsyncSession = Depends(get_session)):
+    return await ActionService(session).get_user_by_id(int(user_id))
