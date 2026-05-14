@@ -8,10 +8,10 @@ class MemberActionSchema(BaseModel):
 
 class ActionSchema(BaseModel):
     id: int
-    user_id: MemberActionSchema
+    user: MemberActionSchema
     guild_id: int
     action: str
-    target_id: MemberActionSchema
+    target: MemberActionSchema
     reason: str
     details: str
     created_at: datetime
