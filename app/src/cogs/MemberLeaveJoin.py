@@ -9,7 +9,6 @@ from app.src.schemas.request.user_schema import UserCreate
 class MemberLeaveJoin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.welcome_channel_id = 1403031110971031756
 
 
     async def create_welcome_embed(self, member: disnake.Member) -> disnake.Embed:
@@ -76,12 +75,12 @@ class MemberLeaveJoin(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: disnake.Member):
+    async def on_member_join(self, member: disnake.Member, guild: disnake.Guild):
         if member.bot:
             return
         
 
-        welcome_channel = self.bot.get_channel(self.welcome_channel_id)
+        welcome_channel = guild.system_channel
 
         if welcome_channel:
             embed = await self.create_welcome_embed(member)
@@ -91,11 +90,11 @@ class MemberLeaveJoin(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member: disnake.Member):
+    async def on_member_remove(self, member: disnake.Member, guild: disnake.Guild):
         if member.bot:
             return
         
-        welcome_channel = self.bot.get_channel(self.welcome_channel_id)
+        welcome_channel = guild.system_channel
 
         if welcome_channel:
             embed = await self.create_remove_embed(member)
