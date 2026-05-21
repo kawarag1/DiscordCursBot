@@ -14,7 +14,7 @@ class UserService():
 
     async def delete_user(self, ds_id: int):
         await self.user_repo.delete_messages_with_attachments(ds_id)
-        id = self.user_repo.get_userID_by_dsID(ds_id)
+        id = await self.user_repo.get_userID_by_dsID(ds_id)
         await self.user_repo.delete_by_id(id)
 
     async def get_server_profile(self, ds_id: int):
