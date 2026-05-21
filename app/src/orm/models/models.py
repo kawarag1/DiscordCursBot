@@ -7,7 +7,8 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "Users"
-    ds_id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True, autoincrement = False)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
+    ds_id: Mapped[BIGINT] = mapped_column(BigInteger, autoincrement = False)
     nickname: Mapped[str] = mapped_column(String(256))
     avatar_url: Mapped[Optional[str]] = mapped_column(String(512))
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
