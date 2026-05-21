@@ -1,31 +1,22 @@
 import disnake
 from disnake.ext import commands
-import traceback
 
 from app.src.services.command_service import CommandService
 from app.src.orm.database.database import async_session_factory
 from app.src.schemas.request.disable_command_schema import DisableCommandSchema
 
 class CommandCheckCog(commands.Cog):
-    """Ког с глобальной проверкой команд"""
-    
     def __init__(self, bot: commands.Bot):
         self.bot = bot
     
     async def cog_check(self, inter: disnake.ApplicationCommandInteraction) -> bool:
-        """
-        Проверка для всех команд в этом коге.
-        Этот метод вызывается ПЕРЕД выполнением любой команды в коге.
-        """
         print(f"🔍 [cog_check] Команда: {inter.application_command.name}")
         
-        # Пропускаем проверку в личных сообщениях
         if not inter.guild:
             return True
         
         command_name = inter.application_command.name
         
-        # Всегда разрешённые команды
         if command_name == "ping":
             return True
         
@@ -42,7 +33,6 @@ class CommandCheckCog(commands.Cog):
                     print(f"   → Результат: {'✅ ВКЛЮЧЕНА' if is_enabled else '❌ ОТКЛЮЧЕНА'}")
                     
                     if not is_enabled:
-                        # Отправляем сообщение только если ещё не было ответа
                         if not inter.response.is_done():
                             await inter.response.send_message(
                                 f"❌ Команда `/{command_name}` отключена на этом сервере.",
