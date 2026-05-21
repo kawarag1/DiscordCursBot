@@ -40,7 +40,7 @@ class LevelCog(CommandCheckCog):
     async def on_message(self, message: disnake.Message):
         if message.author.bot:
             return
-        await self.count_message(message)
+        await self.count_message(message, message.guild)
                             
 
     @commands.slash_command(name="level", description="Проверить свой уровень")
