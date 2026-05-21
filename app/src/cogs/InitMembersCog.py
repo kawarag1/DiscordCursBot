@@ -39,12 +39,12 @@ class InitMembersCog(commands.Cog):
             if not member.bot:
                 async with async_session_factory() as session:
                     async with session.begin():
+                        action_service = ActionService(session)
+                        await action_service.clear_actions(guild.id)
                         user_service = UserService(session)
                         await user_service.delete_user(member.id)
                         command_service = CommandService(session)
                         await command_service.clear_disabled_commands(guild.id)
-                        action_service = ActionService(session)
-                        await action_service.clear_actions(guild.id)
         async with async_session_factory() as session:
             guild_repo = GuildsRepository(session)
             await guild_repo.delete_by_id(guild.id)
