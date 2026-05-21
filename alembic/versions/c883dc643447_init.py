@@ -1,8 +1,8 @@
-"""empty message
+"""init
 
-Revision ID: 429d7b866f46
+Revision ID: c883dc643447
 Revises: 
-Create Date: 2026-04-21 00:10:31.064691
+Create Date: 2026-05-21 17:54:44.404253
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '429d7b866f46'
+revision: str = 'c883dc643447'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -85,6 +85,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Users',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('ds_id', sa.BigInteger(), autoincrement=False, nullable=False),
     sa.Column('nickname', sa.String(length=256), nullable=False),
     sa.Column('avatar_url', sa.String(length=512), nullable=True),
@@ -93,7 +94,7 @@ def upgrade() -> None:
     sa.Column('level', sa.Integer(), nullable=False),
     sa.Column('guild_id', sa.BigInteger(), nullable=False),
     sa.ForeignKeyConstraint(['guild_id'], ['Guilds.id'], ),
-    sa.PrimaryKeyConstraint('ds_id')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Log_entries',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -105,7 +106,7 @@ def upgrade() -> None:
     sa.Column('details', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['guild_id'], ['Guilds.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['Users.ds_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Messages',
@@ -115,7 +116,7 @@ def upgrade() -> None:
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['guild_id'], ['Guilds.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['Users.ds_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Attachments',

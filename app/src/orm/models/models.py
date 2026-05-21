@@ -100,7 +100,7 @@ class DisabledCommands(Base):
 class Messages(Base):
     __tablename__ = "Messages"
     id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
-    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.ds_id"))
+    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
@@ -122,7 +122,7 @@ class Attachments(Base):
 class Log_entries(Base):
     __tablename__ = "Log_entries"
     id: Mapped[int] = mapped_column(Integer, primary_key = True)
-    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.ds_id"))
+    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     action: Mapped[str] = mapped_column(String) #ban, mute, kick, role_add, voice_leave, member_join, member_leave
     target_id: Mapped[BIGINT] = mapped_column(BigInteger)
