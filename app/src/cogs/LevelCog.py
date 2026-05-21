@@ -9,7 +9,6 @@ from app.src.services.user_service import UserService
 class LevelCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.welcome_channel_id = 1403031110971031756
 
     async def create_embed(self, message:disnake.Message, level: int):
         embed = disnake.Embed(
@@ -18,7 +17,7 @@ class LevelCog(CommandCheckCog):
         return embed
 
 
-    async def count_message(self, message: disnake.Message):
+    async def count_message(self, message: disnake.Message, guild: disnake.Guild):
         async with async_session_factory() as session:
             async with session.begin():
                 user_service = UserService(session)
@@ -30,7 +29,7 @@ class LevelCog(CommandCheckCog):
                     profile.level = int(level)
                     await user_service.change_server_profile(profile)
 
-                    welcome_channel = self.bot.get_channel(self.welcome_channel_id)
+                    welcome_channel = guild.system_channel
                     if welcome_channel:
                         embed = await self.create_embed(message, profile.level)
                         await welcome_channel.send(embed=embed)
