@@ -3,6 +3,7 @@ from disnake.ext import commands
 
 from app.src.orm.database.database import migrate, async_session_factory
 from app.src.orm.database.repo.guilds_repo import GuildsRepository
+from app.src.orm.models.models import User
 from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.action_service import ActionService
 from app.src.services.command_service import CommandService
@@ -47,7 +48,7 @@ class InitMembersCog(commands.Cog):
                 await command_service.clear_disabled_commands(guild.id)
                 
 
-                users = await user_service.get_all_by_guild_id(guild.id)
+                users: list[User] = await user_service.get_all_by_guild_id(guild.id)
 
                 for user in users:
                     await user_service.delete_user(user.id)
