@@ -5,4 +5,4 @@ build:
 	docker-compose -f docker/docker-compose.backend.yml --env-file .env up --build
 
 build without:
-	docker-compose -f docker/docker-compose.backend.yml --env-file .env up --build -d
+	docker-compose -f docker/docker-compose.backend.yml --env-file  .env up --build -d
