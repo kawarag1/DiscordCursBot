@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 
 from app.src.orm.database.database import migrate, async_session_factory
+from app.src.orm.database.repo.guilds_repo import GuildsRepository
 from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.guild_service import GuildService
 from app.src.services.user_service import UserService
@@ -30,11 +31,22 @@ class InitMembersCog(commands.Cog):
                         await guild_service.add_new_guild(guild)
                         await self.initialize_guild_members(guild)
 
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild: disnake.Guild):
+        for member in guild.members:
+            if not member.bot:
+                async with async_session_factory() as session:
+                    async with session.begin():
+                        user_service = UserService(session)
+                        await user_service.delete_user(member.id)
+        async with async_session_factory() as session:
+            guild_repo = GuildsRepository(session)
+            await guild_repo.delete_by_id(guild.id)
+
     async def initialize_guild_members(self, guild: disnake.Guild):
         if not guild:
             print("Сервер не найден")
             return 
-
 
         print(f"🔄 Начинаю инициализацию участников сервера: {guild.name}")
         async with async_session_factory() as session:
