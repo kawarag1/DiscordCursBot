@@ -42,17 +42,18 @@ class InitMembersCog(commands.Cog):
                 command_service = CommandService(session)
                 guild_repo = GuildsRepository(session)
                 
-                # Сначала очищаем зависимости
+
                 await action_service.clear_actions(guild.id)
                 await command_service.clear_disabled_commands(guild.id)
                 
-                # Затем удаляем пользователей
+
                 for member in guild.members:
                     if not member.bot:
                         await user_service.delete_user(member.id)
                 
-                # И в конце удаляем гильдию
+
                 await guild_repo.delete_by_id(guild.id)
+                session.commit()
             
 
     async def initialize_guild_members(self, guild: disnake.Guild):
