@@ -4,6 +4,8 @@ from disnake.ext import commands
 from app.src.orm.database.database import migrate, async_session_factory
 from app.src.orm.database.repo.guilds_repo import GuildsRepository
 from app.src.schemas.request.user_schema import UserCreate
+from app.src.services.action_service import ActionService
+from app.src.services.command_service import CommandService
 from app.src.services.guild_service import GuildService
 from app.src.services.user_service import UserService
 
@@ -39,6 +41,10 @@ class InitMembersCog(commands.Cog):
                     async with session.begin():
                         user_service = UserService(session)
                         await user_service.delete_user(member.id)
+                        command_service = CommandService(session)
+                        await command_service.clear_disabled_commands(guild.id)
+                        action_service = ActionService(session)
+                        await action_service.clear_actions(guild.id)
         async with async_session_factory() as session:
             guild_repo = GuildsRepository(session)
             await guild_repo.delete_by_id(guild.id)
