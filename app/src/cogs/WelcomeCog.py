@@ -24,8 +24,8 @@ class WelcomeCog(commands.Cog):
         return embed
     
     @commands.Cog.listener()
-    async def on_guild_join(self):
-        welcome_channel = self.bot.get_channel(self.welcome_channel_id)
+    async def on_guild_join(self, guild: disnake.Guild):
+        welcome_channel = guild.system_channel
         if welcome_channel:
             embed = self.create_welcome_embed()
             await welcome_channel.send(embed = embed)
