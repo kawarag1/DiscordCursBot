@@ -1,6 +1,5 @@
 FROM python:3.13.9-slim
 
-# Устанавливаем системные зависимости
 RUN apt-get update && apt-get install -y \
     curl \
     ffmpeg \
@@ -12,31 +11,23 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Обновляем сертификаты
 RUN update-ca-certificates
 
-# Устанавливаем uv
 RUN pip install --no-cache-dir uv && \
     uv --version
 
 WORKDIR /app
 
-# Копируем зависимости
 COPY pyproject.toml uv.lock* ./
 
-# Устанавливаем зависимости
 RUN uv sync --no-dev --no-cache
 
-# Копируем остальной код
 COPY . .
 
-# Проверяем установку FFmpeg
 RUN ffmpeg -version || echo "FFmpeg not found!"
 
-# Переменные окружения
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_NO_CACHE=1
 
-# Запускаем бота (от root)
 CMD ["python", "-u", "bot.py"]
