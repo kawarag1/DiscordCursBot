@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from app.src.orm.database.repo.user_repo import UserRepository
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.action_service import ActionService
@@ -20,6 +21,7 @@ from app.src.schemas.response.owner_schema import OwnerSchema
 class GuildService():
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.user_repo = UserRepository(session)
 
     async def check_guild_by_id(self, guild_id: int):
         query = select(ModelGuild).filter(ModelGuild.id == guild_id)
@@ -139,10 +141,10 @@ class GuildService():
 
         return members
             
-    async def kick_member(self, owner_id: int, guild_id: int, user_id: int, reason: str):
+    async def kick_member(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
             response = await client.delete(
-                settings.KICK_URI.format(guild_id=guild_id, user_id=user_id),
+                settings.KICK_URI.format(guild_id=guild_id, user_id=user_ds_id),
                 headers={"Authorization": f"Bot {settings.TOKEN}"}
             )
 
@@ -151,21 +153,22 @@ class GuildService():
                     status_code=response.status_code,
                     detail=f"Failed to kick member from Discord: {response.text}"
                 )
+            
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=owner_id,
+                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
                     action="kick",
                     reason=reason,
-                    target_id=user_id,
+                    target_id=await self.user_repo.get_userID_by_dsID(user_ds_id),
                     details="Исключён с сервера",
                     created_at=datetime.utcnow()
                 ))
 
-    async def ban_member(self, owner_id: int, guild_id: int, user_id: int, reason: str):
+    async def ban_member(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
             response = await client.put(
-                settings.BAN_URI.format(guild_id=guild_id, user_id=user_id),
+                settings.BAN_URI.format(guild_id=guild_id, user_id=user_ds_id),
                 headers={"Authorization": f"Bot {settings.TOKEN}",
                          "X-Audit-Log-Reason": reason}
             )
@@ -179,19 +182,19 @@ class GuildService():
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=owner_id,
+                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
                     action="ban_with_message_deletion",
                     reason=reason,
-                    target_id=user_id,
+                    target_id=await self.user_repo.get_userID_by_dsID(user_ds_id),
                     details=f"Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
-            await UserService(self.session).delete_user(user_id)
+            await UserService(self.session).delete_user(user_ds_id)
     
-    async def ban_member_with_message_deletion(self, owner_id: int, guild_id: int, user_id: int, reason: str):
+    async def ban_member_with_message_deletion(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
             response = await client.put(
-                settings.BAN_URI.format(guild_id=guild_id, user_id=user_id),
+                settings.BAN_URI.format(guild_id=guild_id, user_id=user_ds_id),
                 json={"delete_message_seconds": 3 * 24 * 60 * 60},
                 headers={"Authorization": f"Bot {settings.TOKEN}",
                          "X-Audit-Log-Reason": reason})
@@ -201,14 +204,15 @@ class GuildService():
                     status_code=response.status_code,
                     detail=f"Failed to ban member with message deletion from Discord: {response.text}"
                 )
+            
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=owner_id,
+                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
                     action="ban_with_message_deletion",
                     reason=reason,
-                    target_id=user_id,
+                    target_id=await self.user_repo.get_userID_by_dsID(user_ds_id),
                     details=f"Заблокирован с удалением сообщений за последние 3 дня. Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
-            await UserService(self.session).delete_user(user_id)
+            await UserService(self.session).delete_user(user_ds_id)
