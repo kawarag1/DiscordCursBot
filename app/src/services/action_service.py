@@ -1,7 +1,9 @@
 import httpx
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
+from app.src.orm.models.models import Log_entries
 from app.src.orm.database.repo.log_repo import LogRepository
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.action_schema import MemberActionSchema, ActionSchema as ResponceActionSchema
@@ -65,6 +67,11 @@ class ActionService:
                 created_at=action.created_at
             ))
         return actions
+    
+    async def clear_actions(self, guild_id: int):
+            delete_query = delete(Log_entries).filter(Log_entries.guild_id == guild_id)
+            await self.session.execute(delete_query)
+            await self.session.commit()
     
 
     
