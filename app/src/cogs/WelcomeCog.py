@@ -5,7 +5,6 @@ from disnake.ext import commands
 class WelcomeCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.welcome_channel_id = 1403031110971031756
 
     async def create_welcome_embed(self) -> disnake.Embed:
         embed = disnake.Embed(
@@ -27,7 +26,7 @@ class WelcomeCog(commands.Cog):
     async def on_guild_join(self, guild: disnake.Guild):
         welcome_channel = guild.system_channel
         if welcome_channel:
-            embed = self.create_welcome_embed()
+            embed = await self.create_welcome_embed()
             await welcome_channel.send(embed = embed)
 
 def setup(bot):
