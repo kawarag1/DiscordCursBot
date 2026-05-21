@@ -7,16 +7,18 @@ from app.src.schemas.request.user_schema import UserCreate
 class UserService():
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.user_repo = UserRepository(session)
 
     async def add_new_user(self, user: UserCreate):
-        await UserRepository(self.session).create(**user.model_dump())
+        await self.user_repo.create(**user.model_dump())
 
-    async def delete_user(self, id: int):
-        await UserRepository(self.session).delete_messages_with_attachments(id)
-        await UserRepository(self.session).delete_by_id(id)
+    async def delete_user(self, ds_id: int):
+        await self.user_repo.delete_messages_with_attachments(ds_id)
+        id = self.user_repo.get_userID_by_dsID(ds_id)
+        await self.user_repo.delete_by_id(id)
 
     async def get_server_profile(self, ds_id: int):
-        return await UserRepository(self.session).get_by_ds_id(ds_id)
+        return await self.user_repo.get_by_ds_id(ds_id)
 
     async def change_server_profile(self, user: UserCreate):
-        await UserRepository(self.session).update_by_ds_id(user.ds_id, **user.model_dump())
+        await self.user_repo.update_by_ds_id(user.ds_id, **user.model_dump())
