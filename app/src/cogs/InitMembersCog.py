@@ -45,9 +45,9 @@ class InitMembersCog(commands.Cog):
                         await user_service.delete_user(member.id)
                         command_service = CommandService(session)
                         await command_service.clear_disabled_commands(guild.id)
-        async with async_session_factory() as session:
-            guild_repo = GuildsRepository(session)
-            await guild_repo.delete_by_id(guild.id)
+                        guild_repo = GuildsRepository(session)
+                        await guild_repo.delete_by_id(guild.id)
+            
 
     async def initialize_guild_members(self, guild: disnake.Guild):
         if not guild:
