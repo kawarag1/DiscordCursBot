@@ -51,7 +51,7 @@ class InitMembersCog(commands.Cog):
                 await guild_repo.delete_subs(guild.id)
                 await user_service.clear_users(guild.id)
                 await guild_repo.delete_by_id(guild.id)
-                session.commit()
+                await session.commit()
             
 
     async def initialize_guild_members(self, guild: disnake.Guild):
