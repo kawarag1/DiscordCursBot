@@ -54,16 +54,21 @@ class MessageLogsCog(commands.Cog):
 
         return embed
 
+    
+
     @commands.Cog.listener()
-    async def on_message(self, message: disnake.Message, guild: disnake.Guild):
+    async def on_message(self, message: disnake.Message):
         if message.author.bot:
             return
+        
+        if message.channel.name in ["messages", "members"]:
+            return  
         
         async with async_session_factory() as session:
             async with session.begin():
                 message_service = MessageService(session)
                 await message_service.add_message(message)
-
+        guild = message.guild
         log_chanell_id = disnake.utils.get(guild.text_channels, name = "messages")
         if log_chanell_id:
             try:
