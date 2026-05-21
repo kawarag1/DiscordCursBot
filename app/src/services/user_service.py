@@ -11,9 +11,9 @@ class UserService():
     async def add_new_user(self, user: UserCreate):
         await UserRepository(self.session).create(**user.model_dump())
 
-    async def delete_user(self, ds_id: int):
-        await UserRepository(self.session).delete_messages_with_attachments(ds_id)
-        await UserRepository(self.session).delete_by_DSid(ds_id)
+    async def delete_user(self, id: int):
+        await UserRepository(self.session).delete_messages_with_attachments(id)
+        await UserRepository(self.session).delete_by_id(id)
 
     async def get_server_profile(self, ds_id: int):
         return await UserRepository(self.session).get_by_ds_id(ds_id)
