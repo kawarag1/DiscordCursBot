@@ -153,7 +153,9 @@ class GuildService():
                     status_code=response.status_code,
                     detail=f"Failed to kick member from Discord: {response.text}"
                 )
+            
             user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
@@ -164,6 +166,7 @@ class GuildService():
                     details="Исключён с сервера",
                     created_at=datetime.utcnow()
                 ))
+            
             await UserService(self.session).delete_user(user_id_)
 
     async def ban_member(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
@@ -179,7 +182,9 @@ class GuildService():
                     status_code=response.status_code,
                     detail=f"Failed to ban member from Discord: {response.text}"
                 )
+            
             user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
@@ -191,6 +196,7 @@ class GuildService():
                     created_at=datetime.utcnow()
                 ))
             await UserService(self.session).delete_user(user_id_)
+
     async def ban_member_with_message_deletion(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
             response = await client.put(
@@ -204,15 +210,18 @@ class GuildService():
                     status_code=response.status_code,
                     detail=f"Failed to ban member with message deletion from Discord: {response.text}"
                 )
+            
             user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+            
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
                     user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
                     action="ban_with_message_deletion",
                     reason=reason,
-                    target_id=await user_id_,
+                    target_id=user_id_,
                     details=f"Заблокирован с удалением сообщений за последние 3 дня. Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
+            
             await UserService(self.session).delete_user(user_id_)
