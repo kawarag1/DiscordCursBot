@@ -19,7 +19,7 @@ class InitMembersCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: disnake.Guild):
-        self.setup_logs(guild)
+        await self.setup_logs(guild)
         async with async_session_factory() as session:
                 async with session.begin():
                     guild_service = GuildService(session)
