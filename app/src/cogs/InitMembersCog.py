@@ -47,9 +47,14 @@ class InitMembersCog(commands.Cog):
                 await command_service.clear_disabled_commands(guild.id)
                 
 
-                for member in guild.members:
-                    if not member.bot:
-                        await user_service.delete_user(member.id)
+                users = await user_service.get_all_by_guild_id(guild.id)
+
+                for user in users:
+                    await user_service.delete_user(user.id)
+
+                # for member in guild.members:
+                #     if not member.bot:
+                #         await user_service.delete_user(member.id)
                 
 
                 await guild_repo.delete_by_id(guild.id)
