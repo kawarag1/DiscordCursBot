@@ -8,6 +8,13 @@ from app.src.schemas.request.user_update_schema import UserUpdate
 class UserRepository(AbstractRepository):
     model = User
 
+    async def get_userID_by_dsID(self, ds_id: int) -> int:
+        query = select(self.model).where(self.model.ds_id == ds_id)
+        result_ = await self._session.execute(query)
+        result =  result_.scalars().first()
+
+        return result.id
+
     async def get_by_ds_id(self, ds_id: int):
         query = select(self.model).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
