@@ -29,7 +29,7 @@ async def logout(response: Response, owner: OwnerSchema = Depends(get_current_ow
     response.delete_cookie("session_token")
     return {"detail": "Successfully logged out"}
 
-@router.post("/refresh_session_token", dependencies=[Depends(session_auth)],description="Обновление сессионного токена", response_model=OwnerSchema)
+@router.post("/refresh_session_token", dependencies=[Depends(session_auth)], description="Обновление сессионного токена", response_model=OwnerSchema)
 async def refresh_session_token(response: Response, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
     owner_ = await OwnerService(session).refresh_session_token(session_token=owner.session_token)
     response.set_cookie(
