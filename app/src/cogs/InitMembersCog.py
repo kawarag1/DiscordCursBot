@@ -35,18 +35,24 @@ class InitMembersCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: disnake.Guild):
-        for member in guild.members:
-            if not member.bot:
-                async with async_session_factory() as session:
-                    async with session.begin():
-                        action_service = ActionService(session)
-                        await action_service.clear_actions(guild.id)
-                        user_service = UserService(session)
+        async with async_session_factory() as session:
+            async with session.begin():
+                action_service = ActionService(session)
+                user_service = UserService(session)
+                command_service = CommandService(session)
+                guild_repo = GuildsRepository(session)
+                
+                # Сначала очищаем зависимости
+                await action_service.clear_actions(guild.id)
+                await command_service.clear_disabled_commands(guild.id)
+                
+                # Затем удаляем пользователей
+                for member in guild.members:
+                    if not member.bot:
                         await user_service.delete_user(member.id)
-                        command_service = CommandService(session)
-                        await command_service.clear_disabled_commands(guild.id)
-                        guild_repo = GuildsRepository(session)
-                        await guild_repo.delete_by_id(guild.id)
+                
+                # И в конце удаляем гильдию
+                await guild_repo.delete_by_id(guild.id)
             
 
     async def initialize_guild_members(self, guild: disnake.Guild):
