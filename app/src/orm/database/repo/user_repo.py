@@ -29,6 +29,11 @@ class UserRepository(AbstractRepository):
             )
         return None
     
+    async def get_all_by_guild_id(self, guild_id: int):
+        query = select(self.model).where(self.model.guild_id == guild_id)
+        result_ = await self._session.execute(query)
+        result = result_.scalars().all()
+
     async def delete_messages_with_attachments(self, id: int):
         try:
             select_msg_id = select(Messages.id).where(Messages.user_id == id)
