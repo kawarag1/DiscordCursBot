@@ -8,7 +8,6 @@ from app.src.services.message_service import MessageService
 class MessageLogsCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.log_chanell_id = 1446040720686317629
 
 
     async def create_embed(self, message: disnake.Message, moderator: disnake.Member = None):
@@ -56,7 +55,7 @@ class MessageLogsCog(commands.Cog):
         return embed
 
     @commands.Cog.listener()
-    async def on_message(self, message: disnake.Message):
+    async def on_message(self, message: disnake.Message, guild: disnake.Guild):
         if message.author.bot:
             return
         
@@ -65,7 +64,7 @@ class MessageLogsCog(commands.Cog):
                 message_service = MessageService(session)
                 await message_service.add_message(message)
 
-        log_chanell_id = self.bot.get_channel(self.log_chanell_id)
+        log_chanell_id = disnake.utils.get(guild.text_channels, name = "messages")
         if log_chanell_id:
             try:
                 embed = await self.create_embed(message)
