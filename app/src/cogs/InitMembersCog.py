@@ -187,14 +187,11 @@ class InitMembersCog(commands.Cog):
             )
             
             print(f"✅ Категория 'logs' и каналы созданы на сервере {guild.name}")
-            return category, messages_channel, members_channel
             
         except disnake.Forbidden:
             print(f"❌ Нет прав для создания/изменения каналов на сервере {guild.name}")
-            return None, None, None
         except Exception as e:
             print(f"❌ Ошибка при создании/проверке каналов на {guild.name}: {e}")
-            return None, None, None
 
 def setup(bot):
     bot.add_cog(InitMembersCog(bot))
