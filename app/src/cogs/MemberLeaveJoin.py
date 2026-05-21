@@ -75,12 +75,12 @@ class MemberLeaveJoin(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: disnake.Member, guild: disnake.Guild):
+    async def on_member_join(self, member: disnake.Member):
         if member.bot:
             return
         
 
-        welcome_channel = guild.system_channel
+        welcome_channel = member.guild.system_channel
 
         if welcome_channel:
             embed = await self.create_welcome_embed(member)
@@ -90,11 +90,11 @@ class MemberLeaveJoin(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member: disnake.Member, guild: disnake.Guild):
+    async def on_member_remove(self, member: disnake.Member):
         if member.bot:
             return
         
-        welcome_channel = guild.system_channel
+        welcome_channel = member.guild.system_channel
 
         if welcome_channel:
             embed = await self.create_remove_embed(member)
