@@ -29,9 +29,9 @@ class UserRepository(AbstractRepository):
             )
         return None
     
-    async def delete_messages_with_attachments(self, user_ds_id: int):
+    async def delete_messages_with_attachments(self, id: int):
         try:
-            select_msg_id = select(Messages.id).where(Messages.user_id == user_ds_id)
+            select_msg_id = select(Messages.id).where(Messages.user_id == id)
             msg_ids_result = await self._session.execute(select_msg_id)
             msg_ids = msg_ids_result.scalars().all()
 
@@ -43,7 +43,7 @@ class UserRepository(AbstractRepository):
             )
             await self._session.execute(delete_attachments)
 
-            delete_messages = delete(Messages).where(Messages.user_id == user_ds_id)
+            delete_messages = delete(Messages).where(Messages.user_id == id)
             resuls = await self._session.execute(delete_messages)
 
             
