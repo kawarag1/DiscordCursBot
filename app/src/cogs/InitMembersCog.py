@@ -106,6 +106,56 @@ class InitMembersCog(commands.Cog):
                 )
                 await user_service.add_new_user(new_user)
 
+    async def setup_logs(guild: disnake.Guild):
+        try:
+            # 1. Настраиваем права доступа (Permission Overwrites)
+            # Это словарь, где ключ - роль/участник, а значение - их права.
+            overwrites = {
+                # Запрещаем @everyone видеть канал
+                guild.default_role: disnake.PermissionOverwrite(view_channel=False),
+            }
+
+            # Даем права всем ролям, у которых есть флаг 'administrator'
+            for role in guild.roles:
+                if role.permissions.administrator:
+                    overwrites[role] = disnake.PermissionOverwrite(
+                        view_channel=True,   # Видеть канал
+                        read_messages=True,  # Читать сообщения
+                        send_messages=True,  # Отправлять сообщения
+                        read_message_history=True  # Видеть историю сообщений
+                    )
+
+            # 2. Создаем категорию с этими правами
+            # Категория будет применять эти права ко всем каналам внутри нее.
+            category = await guild.create_category(
+                name="logs",
+                overwrites=overwrites,  # Права применяются к категории
+                reason="Бот: Создание лог-каналов для администраторов"
+            )
+
+            # 3. Создаем текстовые каналы внутри категории
+            # Параметр category=category помещает канал внутрь созданной категории.
+            # Они автоматически наследуют права от категории, если не указаны свои.
+            messages_channel = await guild.create_text_channel(
+                name="messages",
+                category=category,
+                reason="Бот: Канал для логов сообщений"
+            )
+
+            members_channel = await guild.create_text_channel(
+                name="members",
+                category=category,
+                reason="Бот: Канал для логов участников"
+            )
+
+            print(f"✅ Категория 'logs' и каналы созданы на сервере {guild.name}")
+
+        except disnake.Forbidden:
+            print(f"❌ Нет прав для создания каналов на сервере {guild.name}")
+            return None, None, None
+        except Exception as e:
+            print(f"❌ Ошибка при создании каналов на {guild.name}: {e}")
+            return None, None, None
 
 def setup(bot):
     bot.add_cog(InitMembersCog(bot))
