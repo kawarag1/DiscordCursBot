@@ -23,6 +23,6 @@ class UserService():
     async def change_server_profile(self, user: UserCreate):
         await self.user_repo.update_by_ds_id(user.ds_id, **user.model_dump())
 
-    async def get_all_by_guild_id(self, guild_id: int):
-        return await self.user_repo.get_all_by_guild_id(guild_id)
+    async def clear_users(self, guild_id: int):
+        await self.user_repo.delete_users_by_guild_id(guild_id)
         
