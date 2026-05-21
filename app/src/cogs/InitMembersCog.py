@@ -107,7 +107,7 @@ class InitMembersCog(commands.Cog):
                 )
                 await user_service.add_new_user(new_user)
 
-    async def setup_logs(guild: disnake.Guild):
+    async def setup_logs(self, guild: disnake.Guild):
         try:
             # 1. Настраиваем права доступа (Permission Overwrites)
             # Это словарь, где ключ - роль/участник, а значение - их права.
