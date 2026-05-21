@@ -51,5 +51,4 @@ class CommandService:
     async def clear_disabled_commands(self, guild_id: int):
         delete_query = delete(ModelCommand).filter(ModelCommand.guild_id == guild_id)
         await self.session.execute(delete_query)
-        await self.session.commit()
     
