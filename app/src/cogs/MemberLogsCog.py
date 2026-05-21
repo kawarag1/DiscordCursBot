@@ -9,9 +9,10 @@ class MemberLogsCog(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: disnake.Member, guild: disnake.Guild):
+    async def on_member_join(self, member: disnake.Member):
         if member.bot:
             return
+        guild = member.guild
         log_channel = disnake.utils.get(guild.text_channels, name = "members")
         if log_channel:
             try:
@@ -21,9 +22,10 @@ class MemberLogsCog(commands.Cog):
                 print(f"❌ Ошибка при логгировании: {e}")
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member: disnake.Member, guild: disnake.Guild):
+    async def on_member_remove(self, member: disnake.Member,):
         if member.bot:
             return
+        guild = member.guild
         log_channel = disnake.utils.get(guild.text_channels, name = "members")
         if log_channel:
             try:
