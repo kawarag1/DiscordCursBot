@@ -15,8 +15,11 @@ class InitMembersCog(commands.Cog):
     async def on_ready(self):
         await migrate()
         print(f"{self.bot.user} is activated!")
-        for guild in self.bot.guilds:
-            async with async_session_factory() as session:
+            
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: disnake.Guild):
+        async with async_session_factory() as session:
                 async with session.begin():
                     guild_service = GuildService(session)
                     guild_check = await guild_service.check_guild_by_id(guild.id)
