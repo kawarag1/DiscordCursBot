@@ -1,3 +1,6 @@
+from unittest import result
+
+from fastapi import logger
 from sqlalchemy import delete, select
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
@@ -8,19 +11,22 @@ from app.src.schemas.request.user_update_schema import UserUpdate
 class UserRepository(AbstractRepository):
     model = User
 
-    async def get_userID_by_dsID(self, ds_id: int) -> int:
+    async def get_userID_by_dsID(self, ds_id: int) -> int | None:
         query = select(self.model.id).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
 
+        if result is None:
+            logger.warning(f"Пользователь с ds_id={ds_id} не найден в базе данных")
+            
         return result
     
-    async def get_userDSID_by_user_ID(self, id: int) -> int:
-        query = select(self.model).where(self.model.id == id)
+    async def get_userDSID_by_user_ID(self, id: int) -> int | None:
+        query = select(self.model.ds_id).where(self.model.id == id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
 
-        return result.ds_id
+        return result
 
     async def get_by_ds_id(self, ds_id: int):
         query = select(self.model).where(self.model.ds_id == ds_id)
