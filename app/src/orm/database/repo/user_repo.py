@@ -9,11 +9,11 @@ class UserRepository(AbstractRepository):
     model = User
 
     async def get_userID_by_dsID(self, ds_id: int) -> int:
-        query = select(self.model).where(self.model.ds_id == ds_id)
+        query = select(self.model.id).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
 
-        return result.id
+        return result
     
     async def get_userDSID_by_user_ID(self, id: int) -> int:
         query = select(self.model).where(self.model.id == id)
@@ -55,10 +55,8 @@ class UserRepository(AbstractRepository):
             await self._session.execute(delete_attachments)
 
             delete_messages = delete(Messages).where(Messages.user_id == id)
-            resuls = await self._session.execute(delete_messages)
+            result = await self._session.execute(delete_messages)
 
-            
-            
         except Exception as e:
             print(f"Ошибка при каскадном удалении: {e}")
         
