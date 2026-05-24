@@ -166,8 +166,6 @@ class GuildService():
                     details="Исключён с сервера",
                     created_at=datetime.utcnow()
                 ))
-            
-            await UserService(self.session).delete_user(user_id_)
 
     async def ban_member(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
@@ -195,7 +193,6 @@ class GuildService():
                     details=f"Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
-            await UserService(self.session).delete_user(user_id_)
 
     async def ban_member_with_message_deletion(self, owner_ds_id: int, guild_id: int, user_ds_id: int, reason: str):
         async with httpx.AsyncClient() as client:
@@ -223,5 +220,3 @@ class GuildService():
                     details=f"Заблокирован с удалением сообщений за последние 3 дня. Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
-            
-            await UserService(self.session).delete_user(user_id_)
