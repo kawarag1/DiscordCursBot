@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
 from app.src.orm.models.models import Log_entries
+from app.src.services.user_service import UserService
 from app.src.orm.database.repo.log_repo import LogRepository
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.action_schema import MemberActionSchema, ActionSchema as ResponceActionSchema
@@ -14,7 +15,7 @@ from app.src.settings.settings import settings
 class ActionService:
     def __init__(self, session: AsyncSession):
         self.session = session
-
+        self.user_service = UserService(session)
     async def log_action(self, action: ActionSchema):
         await LogRepository(self.session).create(**action.model_dump())
 
@@ -39,8 +40,10 @@ class ActionService:
         raw_actions = await self.get_raw_actions(guild_id)
         actions: list[ResponceActionSchema] = []
         for action in raw_actions:
-            user_data = await self.get_user_by_id(action.user_id)
-            target_data = await self.get_user_by_id(action.target_id)
+            user_id = await self.user_service.get_userID_by_dsID(action.user_id)
+            target_id = await self.user_service.get_userID_by_dsID(action.target_id)
+            user_data = await self.get_user_by_id(user_id)
+            target_data = await self.get_user_by_id(target_id)
 
             actions.append(ResponceActionSchema(
                 id=action.id,
