@@ -14,6 +14,13 @@ class UserRepository(AbstractRepository):
         result =  result_.scalars().first()
 
         return result.id
+    
+    async def get_userDSID_by_user_ID(self, id: int) -> int:
+        query = select(self.model).where(self.model.id == id)
+        result_ = await self._session.execute(query)
+        result =  result_.scalars().first()
+
+        return result.ds_id
 
     async def get_by_ds_id(self, ds_id: int):
         query = select(self.model).where(self.model.ds_id == ds_id)
