@@ -1,6 +1,3 @@
-from unittest import result
-
-from fastapi import logger
 from sqlalchemy import delete, select
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
@@ -17,14 +14,17 @@ class UserRepository(AbstractRepository):
         result =  result_.scalars().first()
 
         if result is None:
-            logger.warning(f"Пользователь с ds_id={ds_id} не найден в базе данных")
-            
+            return None
+
         return result
     
     async def get_userDSID_by_user_ID(self, id: int) -> int | None:
         query = select(self.model.ds_id).where(self.model.id == id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
+
+        if result is None:
+            return None
 
         return result
 
