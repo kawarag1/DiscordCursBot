@@ -40,8 +40,8 @@ class ActionService:
         raw_actions = await self.get_raw_actions(guild_id)
         actions: list[ResponceActionSchema] = []
         for action in raw_actions:
-            user_id = await self.user_service.get_userID_by_dsID(action.user_id)
-            target_id = await self.user_service.get_userID_by_dsID(action.target_id)
+            user_id = await self.user_service.get_userDSID_by_dsID(action.user_id)
+            target_id = await self.user_service.get_userDSID_by_dsID(action.target_id)
             user_data = await self.get_user_by_id(user_id)
             target_data = await self.get_user_by_id(target_id)
 
