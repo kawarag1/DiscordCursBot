@@ -28,7 +28,7 @@ class UserRepository(AbstractRepository):
 
         return result
 
-    async def get_by_ds_id(self, ds_id: int):
+    async def get_by_ds_id(self, ds_id: int) -> UserUpdate | None:
         query = select(self.model).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
@@ -37,6 +37,7 @@ class UserRepository(AbstractRepository):
                 ds_id=result.ds_id,
                 avatar_url=result.avatar_url if result.avatar_url else "",
                 nickname=result.nickname,
+                warnings=result.warnings,
                 message_count=result.message_count,
                 level=result.level,
             )
@@ -65,4 +66,26 @@ class UserRepository(AbstractRepository):
 
         except Exception as e:
             print(f"Ошибка при каскадном удалении: {e}")
+    
+    async def get_user_user_warnings(self, ds_id: int) -> int:
+        query = select(self.model.warnings).where(self.model.ds_id == ds_id)
+        result_ = await self._session.execute(query)
+        result =  result_.scalars().first()
+
+        if result is None:
+            return 0
+
+        return result
+    
+    async def add_warning(self, ds_id: int):
+        user = await self.get_by_ds_id(ds_id)
+        if user:
+            user.warnings = user.warnings + 1
+            await self.update_by_ds_id(ds_id, warnings=user.warnings)
+
+    async def clear_warnings(self, ds_id: int):
+        user = await self.get_by_ds_id(ds_id)
+        if user:
+            user.warnings = 0
+            await self.update_by_ds_id(ds_id, warnings=user.warnings)
         
