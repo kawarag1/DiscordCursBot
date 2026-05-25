@@ -8,4 +8,5 @@ class UserCreate(BaseModel):
     created_at: datetime
     message_count: int
     level: int
+    warnings: int
     guild_id: int
