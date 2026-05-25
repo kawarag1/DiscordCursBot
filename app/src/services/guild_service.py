@@ -11,7 +11,6 @@ from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.action_service import ActionService
 from app.src.services.owner_service import OwnerService
-from app.src.services.user_service import UserService
 from app.src.settings.settings import settings
 from app.src.orm.database.repo.owner_repo import OwnerRepository
 from app.src.orm.models.models import Guild as ModelGuild

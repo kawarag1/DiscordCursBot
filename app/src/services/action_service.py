@@ -16,6 +16,7 @@ class ActionService:
     def __init__(self, session: AsyncSession):
         self.session = session
         self.user_service = UserService(session)
+        
     async def log_action(self, action: ActionSchema):
         await LogRepository(self.session).create(**action.model_dump())
 

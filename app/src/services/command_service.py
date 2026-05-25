@@ -1,13 +1,10 @@
 
-from fastapi import Depends
 from sqlalchemy import delete, exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.src.schemas.request.disable_command_schema import DisableCommandSchema
 from app.src.orm.database.repo.command_repo import CommandRepository
 from app.src.orm.models.models import DisabledCommands as ModelCommand
-from app.src.utils.redis.redis_client import AsyncRedisClient, get_redis
-from app.src.settings.settings import settings
 
 class CommandService:
     def __init__(self, session: AsyncSession):

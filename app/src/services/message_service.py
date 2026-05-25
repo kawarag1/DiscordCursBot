@@ -1,4 +1,3 @@
-from datetime import datetime
 import disnake
 from sqlalchemy.ext.asyncio import AsyncSession
 
