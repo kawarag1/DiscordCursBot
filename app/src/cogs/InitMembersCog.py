@@ -137,53 +137,18 @@ class InitMembersCog(commands.Cog):
             existing_category = disnake.utils.get(guild.categories, name="logs")
             
             if existing_category:
+                category = existing_category
                 print(f"📁 Категория 'logs' уже существует на сервере {guild.name}")
-                
-                messages_channel = disnake.utils.get(existing_category.text_channels, name="messages")
-                members_channel = disnake.utils.get(existing_category.text_channels, name="members")
-                
-                if not messages_channel:
-                    messages_channel = await guild.create_text_channel(
-                        name="messages",
-                        category=existing_category,
-                        reason="Бот: Создание недостающего канала для логов сообщений"
-                    )
-                    print(f"📝 Создан недостающий канал 'messages' на сервере {guild.name}")
-                
-                if not members_channel:
-                    members_channel = await guild.create_text_channel(
-                        name="members",
-                        category=existing_category,
-                        reason="Бот: Создание недостающего канала для логов участников"
-                    )
-                    print(f"👥 Создан недостающий канал 'members' на сервере {guild.name}")
-                
-                overwrites = {
-                    guild.default_role: disnake.PermissionOverwrite(view_channel=False),
-                }
-                
-                for role in guild.roles:
-                    if role.permissions.administrator:
-                        overwrites[role] = disnake.PermissionOverwrite(
-                            view_channel=True,
-                            read_messages=True,
-                            send_messages=True,
-                            read_message_history=True 
-                        )
-                
-                await existing_category.edit(overwrites=overwrites)
-                if messages_channel:
-                    await messages_channel.edit(overwrites=overwrites)
-                if members_channel:
-                    await members_channel.edit(overwrites=overwrites)
-                
-                print(f"✅ Права доступа обновлены для существующих лог-каналов на сервере {guild.name}")
-                return existing_category, messages_channel, members_channel
+            else:
+                category = await guild.create_category(
+                    name="logs",
+                    reason="Бот: Создание лог-каналов для администраторов"
+                )
+                print(f"📁 Категория 'logs' создана на сервере {guild.name}")
             
             overwrites = {
                 guild.default_role: disnake.PermissionOverwrite(view_channel=False),
             }
-            
             for role in guild.roles:
                 if role.permissions.administrator:
                     overwrites[role] = disnake.PermissionOverwrite(
@@ -193,25 +158,40 @@ class InitMembersCog(commands.Cog):
                         read_message_history=True 
                     )
             
-            category = await guild.create_category(
-                name="logs",
-                overwrites=overwrites,
-                reason="Бот: Создание лог-каналов для администраторов"
-            )
+            await category.edit(overwrites=overwrites)
             
-            messages_channel = await guild.create_text_channel(
-                name="messages",
-                category=category,
-                reason="Бот: Канал для логов сообщений"
-            )
+            messages_channel = disnake.utils.get(category.text_channels, name="messages")
+            if not messages_channel:
+                messages_channel = await guild.create_text_channel(
+                    name="messages",
+                    category=category,
+                    reason="Бот: Создание канала для логов сообщений"
+                )
+                await messages_channel.edit(overwrites=overwrites)
+                print(f"📝 Создан канал 'messages' на сервере {guild.name}")
             
-            members_channel = await guild.create_text_channel(
-                name="members",
-                category=category,
-                reason="Бот: Канал для логов участников"
-            )
+            members_channel = disnake.utils.get(category.text_channels, name="members")
+            if not members_channel:
+                members_channel = await guild.create_text_channel(
+                    name="members",
+                    category=category,
+                    reason="Бот: Создание канала для логов участников"
+                )
+                await members_channel.edit(overwrites=overwrites)
+                print(f"👥 Создан канал 'members' на сервере {guild.name}")
             
-            print(f"✅ Категория 'logs' и каналы созданы на сервере {guild.name}")
+            mod_log_channel = disnake.utils.get(category.text_channels, name="mod-log")
+            if not mod_log_channel:
+                mod_log_channel = await guild.create_text_channel(
+                    name="mod-log",
+                    category=category,
+                    reason="Бот: Создание канала для логов модерации"
+                )
+                await mod_log_channel.edit(overwrites=overwrites)
+                print(f"�️ Создан канал 'mod-log' на сервере {guild.name}")
+            
+            print(f"✅ Лог-каналы настроены на сервере {guild.name}")
+            return category, messages_channel, members_channel
             
         except disnake.Forbidden:
             print(f"❌ Нет прав для создания/изменения каналов на сервере {guild.name}")
