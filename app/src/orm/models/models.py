@@ -14,6 +14,7 @@ class User(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
     message_count: Mapped[BIGINT] = mapped_column(BigInteger, default = 0)
     level: Mapped[int] = mapped_column(Integer, default = 1)
+    warnings: Mapped[int] = mapped_column(Integer, default = 0)
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
 
     guilds: Mapped["Guild"] = relationship("Guild", back_populates = "users")
@@ -40,7 +41,6 @@ class Guild(Base):
     name: Mapped[str] = mapped_column(String(256))
     owner_id: Mapped[Optional[BIGINT]] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
     icon_hash: Mapped[Optional[str]] = mapped_column(String(256))
-    config_json: Mapped[Optional[str]] = mapped_column(Text)
 
     owners: Mapped["Owner"] = relationship("Owner", back_populates = "guilds")
     users: Mapped["User"] = relationship("User", back_populates = "guilds")
