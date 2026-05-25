@@ -70,6 +70,7 @@ class InitMembersCog(commands.Cog):
                         created_at = member.created_at.isoformat(),
                         message_count = 1,
                         level = 1,
+                        warnings = 0,
                         guild_id = member.guild.id
                     )
                     user_service = UserService(session)
@@ -113,6 +114,7 @@ class InitMembersCog(commands.Cog):
                     created_at = member.created_at.isoformat(),
                     message_count = 1,
                     level = 1,
+                    warnings = 0,
                     guild_id = member.guild.id
                 )
                 
@@ -125,6 +127,7 @@ class InitMembersCog(commands.Cog):
                     created_at = member.created_at.isoformat(),
                     message_count = 1,
                     level = 1,
+                    warnings = 0,
                     guild_id = member.guild.id
                 )
                 await user_service.add_new_user(new_user)
