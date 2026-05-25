@@ -183,7 +183,7 @@ class AdminCog(commands.Cog):
                             action="kick",
                             reason=reason,
                             target_id=user.id,
-                            details=f"",
+                            details="",
                             created_at=datetime.utcnow()
                         )
                     )

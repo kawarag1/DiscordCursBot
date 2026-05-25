@@ -12,7 +12,7 @@ class MessageLogsCog(commands.Cog):
 
     async def create_embed(self, message: disnake.Message, moderator: disnake.Member = None):
         embed = disnake.Embed(
-            title = f"Сообщение отправлено",
+            title = "Сообщение отправлено",
             color=disnake.Color.green(),
             timestamp = datetime.now()
         )

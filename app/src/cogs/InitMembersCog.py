@@ -3,7 +3,6 @@ from disnake.ext import commands
 
 from app.src.orm.database.database import migrate, async_session_factory
 from app.src.orm.database.repo.guilds_repo import GuildsRepository
-from app.src.orm.models.models import User
 from app.src.schemas.request.user_schema import UserCreate
 from app.src.services.action_service import ActionService
 from app.src.services.command_service import CommandService
@@ -76,7 +75,7 @@ class InitMembersCog(commands.Cog):
                     user_service = UserService(session)
                     await user_service.add_new_user(user)
 
-                print(f"✅ Инициализация завершена!")
+                print("✅ Инициализация завершена!")
             
             except Exception as e:
                 await session.rollback()
@@ -90,7 +89,7 @@ class InitMembersCog(commands.Cog):
         try:
             await self.initialize_guild_members(inter.guild)
             await inter.edit_original_response(
-                content=f"✅ Участники сервера успешно инициализированы!"
+                content="✅ Участники сервера успешно инициализированы!"
             )
         except Exception as e:
             await inter.edit_original_response(
