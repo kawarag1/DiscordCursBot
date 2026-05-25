@@ -16,6 +16,7 @@ dependencies = [
     "pyjwt>=2.12.1",
     "pynacl>=1.6.2",
     "redis>=7.3.0",
+    "ruff>=0.15.14",
     "sqlalchemy>=2.0.48",
     "uvicorn>=0.42.0",
     "yandex-music>=2.2.0",
