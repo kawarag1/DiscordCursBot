@@ -98,6 +98,16 @@ class OwnerService:
     async def remove_user_tokens(self, owner_id: int):
         await self._redis.revoke_all_user_tokens(owner_id)
 
+    async def refresh_tokens(self, owner_id: int) -> AccessToken:
+        tokens = await self.get_discord_tokens_from_redis(owner_id)
+        if not tokens:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No tokens found for user")
+
+        new_ds_tokens = await self.refresh_access_token(tokens.refresh_token)
+        new_tokens = await self.get_user_tokens(sub=str(owner_id))
+        await self.store_user_tokens(owner_id, new_ds_tokens.access_token, new_ds_tokens.refresh_token)
+        return new_tokens
+
     @staticmethod
     async def refresh_access_token(refresh_token: str) -> DsTokenResponse:
         async with httpx.AsyncClient() as client:

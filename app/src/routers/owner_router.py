@@ -33,3 +33,9 @@ async def logout(response: Response, owner: OwnerSchema = Depends(get_current_ow
 @router.get("/me", description="Получение информации о владельце", response_model=OwnerSchema)
 async def get_current_owner_info(owner: OwnerSchema = Depends(get_current_owner)):
     return owner
+
+@router.post("/refresh", description="Обновление токенов", response_model=AccessToken)
+async def refresh_tokens(response: Response, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session), redis = Depends(get_redis(0))):
+    tokens = await OwnerService(session, redis).refresh_tokens(owner.id)
+    response.set_cookie(key="access_token", value=tokens.access_token, httponly=True, max_age=settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES * 60)
+    response.set_cookie(key="refresh_token", value=tokens.refresh_token, httponly=True, max_age=settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60)
