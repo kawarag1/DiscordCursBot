@@ -5,14 +5,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
 from app.src.orm.database.repo.owner_repo import OwnerRepository
+from app.src.schemas.response.access_token import AccessToken
+from app.src.schemas.token_payload import TokenPayload
+from app.src.security.jwt_manager import JWTManager
+from app.src.security.jwt_type import JWTType
 from app.src.settings.settings import settings
 from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.schemas.response.ds_token_response import DsTokenResponse
+from app.src.utils.redis.redis_client import AsyncRedisClient
 
 
 class OwnerService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession,  redis: AsyncRedisClient | None = None):
         self.session = session
+        self._redis = redis
 
     async def exchange_code(self, code: str):
         data ={
@@ -33,7 +39,7 @@ class OwnerService:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to get token: {response.text}")
             token_data = response.json()
 
-            return DsTokenResponse(**token_data, session_token=secrets.token_urlsafe(32), expires_at=int((datetime.utcnow() + timedelta(seconds=token_data['expires_in'])).timestamp()))
+            return DsTokenResponse(**token_data)
 
             
     async def get_owner_info(self, access_token: str) -> int:
@@ -52,19 +58,48 @@ class OwnerService:
             user_data = response.json()
             return int(user_data["id"])
 
-    async def add_owner(self, owner_id: int, access_token:str, refresh_token: str, session_token: str, expires_at: int | datetime) -> OwnerSchema:
-        if isinstance(expires_at, int):
-            expires_at = datetime.fromtimestamp(expires_at, tz=timezone.utc)
 
-        if await OwnerRepository(self.session).exists_by_ds_id(owner_id):
-            await OwnerRepository(self.session).update_refresh_token(owner_id, access_token, refresh_token, session_token, expires_at)
-            return await OwnerRepository(self.session).get_by_ds_id(owner_id)
+    async def get_user_tokens(self, **kwargs)-> AccessToken | None:
+        token_payload = TokenPayload(**kwargs)
+        jwt_manager = JWTManager()
+
+        return AccessToken(
+            access_token=await jwt_manager.encode_token(token_payload, token_type=JWTType.ACCESS),
+            refresh_token=await jwt_manager.encode_token(token_payload, token_type=JWTType.REFRESH)
+        )
+    
+    async def store_user_tokens(self, owner_id: int, access_token: str, refresh_token: str):
+        await self._redis.check_user_tokens(
+            owner_id,
+            access_token,
+            settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES * 60
+        )
+
+        await self._redis.store_refresh_token(
+            owner_id,
+            refresh_token,
+            settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60
+        )
+
+    async def add_owner(self, owner_id: int, access_token: str, refresh_token: str) -> OwnerSchema:
+        owner = await OwnerRepository(self.session).get_by_ds_id(owner_id)
+        if owner:
+            await self._redis.revoke_all_user_tokens(owner_id)
+            await self.store_user_tokens(owner.id, access_token, refresh_token)
+            return await self.get_user_tokens(sub=owner.id)
         else:
-            return await OwnerRepository(self.session).create(ds_id=owner_id, access_token=access_token, refresh_token=refresh_token, session_token=session_token, expires_at=expires_at)
+            await OwnerRepository(self.session).create(ds_id=owner_id)
+            await self.store_user_tokens(owner.id, access_token, refresh_token)
+            return await self.get_user_tokens(sub=owner.id)
 
+    async def get_discord_tokens_from_redis(self, owner_id: int) -> AccessToken | None:
+        return await self._redis.get_user_tokens(owner_id)
+
+    async def remove_user_tokens(self, owner_id: int):
+        await self._redis.revoke_all_user_tokens(owner_id)
+        
     @staticmethod
     async def refresh_access_token(refresh_token: str) -> DsTokenResponse:
-        """Обновление истекшего access_token"""
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 settings.TOKEN_URI,
@@ -85,29 +120,6 @@ class OwnerService:
             
             token_data = response.json()
             return DsTokenResponse(**token_data)
-    
-    async def check_session_token(self, session_token: str, expires_at: int | datetime) -> OwnerSchema:
-        if expires_at > datetime.now(tz=timezone.utc).timestamp():
-            owner = await OwnerRepository(self.session).get_by_session_token(session_token)
-            if not owner:
-                self.refresh_session_token(session_token)
-                return owner
-            return owner
-
-    async def refresh_session_token(self, session_token: str) -> OwnerSchema:
-        owner = await OwnerRepository(self.session).get_by_session_token(session_token)
-        if not owner:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found")
-
-        new_session_token = secrets.token_urlsafe(32)
-        await OwnerRepository(self.session).update_refresh_token(
-            ds_id=owner.ds_id,
-            access_token=owner.access_token,
-            refresh_token=owner.refresh_token,
-            session_token=new_session_token,
-            expires_at=datetime.fromtimestamp(owner.expires_at, tz=timezone.utc) if owner.expires_at else None
-        )
-        return await OwnerRepository(self.session).get_by_session_token(new_session_token)
 
     
 
