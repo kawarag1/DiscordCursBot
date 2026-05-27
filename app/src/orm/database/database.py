@@ -12,7 +12,7 @@ import sys
 from alembic.config import Config
 from alembic import command
 
-from app.src.utils.logger import logger
+from app.src.utils.logger.logger import logger
 from app.src.settings.settings import settings
 
 async def get_engine() -> AsyncEngine:
@@ -36,7 +36,6 @@ async def migrate():
     logger.info("Checking for database migrations...")
 
     try:
-        # Запускаем alembic upgrade
         result = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], capture_output=True, text=True)
 
         if result.returncode != 0:
