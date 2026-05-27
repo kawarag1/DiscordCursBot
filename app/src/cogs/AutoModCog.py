@@ -232,7 +232,7 @@ class AutoModCog(commands.Cog):
                                     action="warn",
                                     reason="Использование запрещённого слова (при редактировании)",
                                     target_id=user_id,
-                                    details=f"Запрещённое слово: {bad_word}",
+                                    details=f"Автоматическое предупреждение за отредактированное сообщение",
                                     created_at=datetime.utcnow()
                                 )
                             )
@@ -241,7 +241,7 @@ class AutoModCog(commands.Cog):
             
             try:
                 await after.channel.send(
-                    f"⚠️ {after.author.mention}, ваше отредактированное сообщение содержит запрещённое слово **{bad_word}**!",
+                    f"⚠️ {after.author.mention}, ваше отредактированное сообщение содержит запрещённое слово!",
                     delete_after=10
                 )
             except:
