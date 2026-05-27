@@ -18,6 +18,10 @@ class AsyncRedisClient:
     async def connect(self):
         self._redis = await redis.from_url(self.url, decode_responses=True)
 
+    async def close(self):
+        if self._redis:
+            await self._redis.close()
+
     async def check_user_tokens(self, user_id, token: str, expires_in: int):
         token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{token}")
         if token:
