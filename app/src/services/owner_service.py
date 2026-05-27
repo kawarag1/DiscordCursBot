@@ -89,7 +89,7 @@ class OwnerService:
             return await self.get_user_tokens(sub=str(owner.id))
         else:
             await OwnerRepository(self.session).create(ds_id=owner_id)
-            await self.store_user_tokens(owner.id, access_token, refresh_token)
+            await self.store_user_tokens(owner_id, access_token, refresh_token)
             return await self.get_user_tokens(sub=str(owner.id))
 
     async def get_discord_tokens_from_redis(self, owner_id: int) -> AccessToken | None:
