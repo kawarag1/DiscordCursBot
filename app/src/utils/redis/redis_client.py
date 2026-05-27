@@ -45,9 +45,9 @@ class AsyncRedisClient:
         refresh_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}refresh:{user_id}")
 
         if access_token:
-            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}access:{access_token}")
+            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}access:{user_id}")
         if refresh_token:
-            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}refresh:{refresh_token}")
+            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}refresh:{user_id}")
 
     async def store_access_token(self, user_id: int, token: str, expires_in: int):
         key = f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}"
