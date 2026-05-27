@@ -23,7 +23,7 @@ class AsyncRedisClient:
             await self._redis.close()
 
     async def check_user_tokens(self, user_id, token: str, expires_in: int):
-        token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{token}")
+        token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
         if token:
             await self.revoke_all_user_tokens(user_id)
 
@@ -33,21 +33,21 @@ class AsyncRedisClient:
 
 
     async def get_user_tokens(self, user_id: int) -> AccessToken | None:
-        access_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{user_id}")
-        refresh_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}refresh:{user_id}")
+        access_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
+        refresh_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}refresh:{str(user_id)}")
 
         if access_token and refresh_token:
             return AccessToken(access_token=access_token, refresh_token=refresh_token)
         return None
 
     async def revoke_all_user_tokens(self, user_id: int):
-        access_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{user_id}")
-        refresh_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}refresh:{user_id}")
+        access_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
+        refresh_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}refresh:{str(user_id)}")
 
         if access_token:
-            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}access:{user_id}")
+            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
         if refresh_token:
-            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}refresh:{user_id}")
+            await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}refresh:{str(user_id)}")
 
     async def store_access_token(self, user_id: int, token: str, expires_in: int):
         key = f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}"
