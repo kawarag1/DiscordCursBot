@@ -38,9 +38,6 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
 
     JWT_REDIS_PREFIX: str = "jwt:"
-    JWT_BLACKLIST_PREFIX: str = "blacklist:"
-    JWT_USER_SESSIONS_PREFIX: str = "user_sessions:"
-    COMMAND_REDIS_PREFIX: str = "blocked_command"
 
     class Config:
         env_file = ".env"
