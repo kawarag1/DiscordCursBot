@@ -61,9 +61,9 @@ class AutoModCog(commands.Cog):
                 if warnings >= self.settings.get("max_warnings", 3):
                     if self.settings.get("mute_user", False):
                         await self.mute_user(message.guild, message.author, reason="Превышение количества предупреждений")
-                        await message.reply(f"⚠️ {message.author.mention}, вы были замучены за превышение количества предупреждений.")
-                    else:
-                        await message.reply(f"⚠️ {message.author.mention}, данное слово запрещено! Это предупреждение {warnings}/{self.settings.get('max_warnings', 3)}.\nПожалуйста, соблюдайте правила сервера.")
+                        await message.channel.send(f"⚠️ {message.author.mention}, вы были замучены за превышение количества предупреждений.")
+                else:
+                    await message.channel.send(f"⚠️ {message.author.mention}, данное слово запрещено! Это предупреждение {warnings}/{self.settings.get('max_warnings', 3)}.\nПожалуйста, соблюдайте правила сервера.")
                 
 
     async def mute_user(self, guild: disnake.Guild, user: disnake.Member, reason: str):
