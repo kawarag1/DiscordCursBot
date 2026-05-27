@@ -28,7 +28,6 @@ class AsyncRedisClient:
             await self.revoke_all_user_tokens(user_id)
 
             await self.store_access_token(user_id, token, expires_in)
-            await self.store_refresh_token(user_id, token, expires_in * 24 * 7)
         else:
             await self.store_access_token(user_id, token, expires_in)
 
@@ -51,12 +50,12 @@ class AsyncRedisClient:
             await self._redis.delete(f"{settings.JWT_REDIS_PREFIX}refresh:{refresh_token}")
 
     async def store_access_token(self, user_id: int, token: str, expires_in: int):
-        key = f"{settings.JWT_REDIS_PREFIX}access:{token}"
-        await self._redis.setex(key, expires_in, str(user_id))
+        key = f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}"
+        await self._redis.setex(key, expires_in, str(token))
         
     async def store_refresh_token(self, user_id: int, token: str, expires_in: int):
-        key = f"{settings.JWT_REDIS_PREFIX}refresh:{token}"
-        await self._redis.setex(key, expires_in, str(user_id))
+        key = f"{settings.JWT_REDIS_PREFIX}refresh:{str(user_id)}"
+        await self._redis.setex(key, expires_in, str(token))
 
 def get_redis(db_num: int = 0):
     async def _get_redis() -> AsyncGenerator[AsyncRedisClient, None]:
