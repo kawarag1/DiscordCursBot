@@ -68,7 +68,7 @@ class AbstractRepository(ABC):
         query = update(self.model).where(self.model.ds_id == id).values(**kwargs).returning(self.model)
         result = await self._session.execute(query)
         await self.commit()
-        return result.scalars().first()
+        
 
     async def get_by_filter_one(self, **kwargs):
         query = select(self.model).filter_by(**kwargs)
