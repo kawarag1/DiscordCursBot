@@ -197,6 +197,68 @@ class AutoModCog(commands.Cog):
                 )
             except Exception as e:
                 print(f"Ошибка при удалении сообщения со ссылкой: {e}")
+    
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
+        if after.author.bot:
+            return
+        
+        if before.content == after.content:
+            return
+        
+        url_pattern = re.compile(r'https?://\S+', re.IGNORECASE)
+        
+        contains, bad_word = await self.contains_bad_word(after)
+        if contains:
+            if self.settings.get("delete_message", True):
+                try:
+                    await after.delete()
+                except Exception as e:
+                    print(f"Ошибка при удалении отредактированного сообщения: {e}")
+            
+            if self.settings.get("warn_user", True):
+                await self.warn_user(after, bad_word)
+                
+                try:
+                    async with async_session_factory() as session:
+                        async with session.begin():
+                            action_service = ActionService(session)
+                            user_service = UserService(session)
+                            user_id = await user_service.get_userID_by_DS_ID(after.author.id)
+                            await action_service.log_action(
+                                ActionSchema(
+                                    guild_id=after.guild.id,
+                                    user_id=user_id,
+                                    action="warn",
+                                    reason="Использование запрещённого слова (при редактировании)",
+                                    target_id=user_id,
+                                    details=f"Запрещённое слово: {bad_word}",
+                                    created_at=datetime.utcnow()
+                                )
+                            )
+                except Exception as e:
+                    print(f"❌ Ошибка при логировании предупреждения (редактирование): {e}")
+            
+            try:
+                await after.channel.send(
+                    f"⚠️ {after.author.mention}, ваше отредактированное сообщение содержит запрещённое слово **{bad_word}**!",
+                    delete_after=10
+                )
+            except:
+                pass
+            
+            return
+        
+        if url_pattern.search(after.content):
+            try:
+                await after.delete()
+                await after.channel.send(
+                    f"❌ {after.author.mention}, ссылки запрещены на этом сервере! "
+                    f"Ваше отредактированное сообщение было удалено.",
+                    delete_after=5
+                )
+            except Exception as e:
+                print(f"Ошибка при удалении отредактированного сообщения со ссылкой: {e}")
 
 def setup(bot: commands.Bot):
     bot.add_cog(AutoModCog(bot))
