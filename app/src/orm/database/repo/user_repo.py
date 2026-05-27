@@ -77,11 +77,12 @@ class UserRepository(AbstractRepository):
 
         return result
     
-    async def add_warning(self, ds_id: int):
+    async def add_warning(self, ds_id: int) -> int:
         user = await self.get_by_ds_id(ds_id)
         if user:
             user.warnings = user.warnings + 1
             await self.update_by_ds_id(ds_id, warnings=user.warnings)
+            return user.warnings
 
     async def clear_warnings(self, ds_id: int):
         user = await self.get_by_ds_id(ds_id)
