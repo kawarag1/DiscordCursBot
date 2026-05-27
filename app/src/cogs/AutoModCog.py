@@ -5,6 +5,7 @@ import re
 
 import disnake
 from disnake.ext import commands
+from pathlib import Path
 
 from app.src.orm.database.database import async_session_factory
 from app.src.services.user_service import UserService
@@ -23,7 +24,8 @@ class AutoModCog(commands.Cog):
 
     async def load_config(self):
         try:
-            with open("utils/bad_words.json", "r") as f:
+            config_path = Path(__file__).parent.parent / "utils" / "bad_words.json"
+            with open(config_path, "r") as f:
                 data = json.load(f)
                 self.bad_words = data.get("bad_words", [])
                 self.settings = data.get("settings", {})
