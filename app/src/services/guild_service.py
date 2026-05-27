@@ -16,11 +16,13 @@ from app.src.orm.database.repo.owner_repo import OwnerRepository
 from app.src.orm.models.models import Guild as ModelGuild
 from app.src.schemas.response.guild_schema import GuildSchema
 from app.src.schemas.response.owner_schema import OwnerSchema
+from app.src.utils.redis.redis_client import AsyncRedisClient
 
 class GuildService():
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, redis: AsyncRedisClient | None = None):
         self.session = session
         self.user_repo = UserRepository(session)
+        self.owner_service = OwnerService(session, redis)
 
     async def check_guild_by_id(self, guild_id: int):
         query = select(ModelGuild).filter(ModelGuild.id == guild_id)
@@ -40,34 +42,29 @@ class GuildService():
         await self.session.commit()
 
     async def get_user_guilds(self, owner: OwnerSchema) -> list:
+        tokens = await self.owner_service.get_discord_tokens_from_redis(owner.id)
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 settings.GUILDS_URI,
-                headers={"Authorization": f"Bearer {owner.access_token}"}
+                headers={"Authorization": f"Bearer {tokens.access_token}"}
             )
 
             if response.status_code == 401:
-                if not owner.refresh_token:
+                if not tokens.refresh_token:
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Discord session expired. Please login again."
                     )
 
                 try:
-                    new_tokens = await OwnerService.refresh_access_token(owner.refresh_token)
+                    new_tokens = await OwnerService.refresh_access_token(tokens.refresh_token)
                 except HTTPException:
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Discord session expired. Please login again."
                     )
 
-                await OwnerRepository(self.session).update_refresh_token(
-                    ds_id=owner.ds_id,
-                    access_token=new_tokens.access_token,
-                    refresh_token=new_tokens.refresh_token,
-                    session_token=owner.session_token,
-                    expires_at=datetime.fromtimestamp(new_tokens.expires_at, tz=timezone.utc)
-                )
+                await self.owner_service.store_user_tokens(owner.id, new_tokens.access_token, new_tokens.refresh_token)
                 response = await client.get(
                     settings.GUILDS_URI,
                     headers={"Authorization": f"Bearer {new_tokens.access_token}"}
