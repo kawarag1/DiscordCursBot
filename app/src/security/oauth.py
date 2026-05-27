@@ -27,5 +27,5 @@ async def get_current_owner(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Внутренняя ошибка сервера, попробуйте позже.",
         )
-    owner = await OwnerRepository(session).get_by_id(owner_id)
+    owner = await OwnerRepository(session).get_by_id(int(owner_id))
     return OwnerSchema.model_validate(owner)
