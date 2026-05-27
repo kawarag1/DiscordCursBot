@@ -13,7 +13,7 @@ class JWTManager:
         self,
         jwt_config: JWTParams = JWTParams(
             algorithms=[settings.JWT_ALGORITHM],
-            secret_key=settings.jwt_secret_key,
+            secret_key=settings.JWT_SECRET_KEY,
             lifetime=JWTLifetime(
                 for_access=settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES,
                 for_refresh=settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS,
