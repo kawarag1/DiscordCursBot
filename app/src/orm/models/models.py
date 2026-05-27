@@ -24,7 +24,7 @@ class User(Base):
 
 class Owner(Base):
     __tablename__ = "Owners"
-    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True, autoincrement = True)
     ds_id: Mapped[BIGINT] = mapped_column(BigInteger, unique = True)
     email: Mapped[Optional[str]] = mapped_column(String(256), unique = True)
 
@@ -47,7 +47,7 @@ class Guild(Base):
 
 class Subscription(Base):
     __tablename__ = "Subscriptions"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     start_date: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime.utcnow)
@@ -63,7 +63,7 @@ class Subscription(Base):
 
 class SubscriptionPlan(Base):
     __tablename__ = "SubscriptionPlans"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     name: Mapped[str] = mapped_column(String(256))
     description: Mapped[Optional[str]] = mapped_column(Text)
     price_monthly: Mapped[float] = mapped_column(Numeric(10, 2))
@@ -75,7 +75,7 @@ class SubscriptionPlan(Base):
 
 class Payment(Base):
     __tablename__ = "Payments"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     payment_method: Mapped[str] = mapped_column(String(50))
     payment_id: Mapped[str] = mapped_column(String(256), unique = True)
     plan_id: Mapped[int] = mapped_column(Integer, ForeignKey("SubscriptionPlans.id"))
@@ -87,7 +87,7 @@ class Payment(Base):
 
 class DisabledCommands(Base):
     __tablename__ = "DisabledCommands"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     command_name: Mapped[str] = mapped_column(String(256))
 
@@ -95,7 +95,7 @@ class DisabledCommands(Base):
 
 class Messages(Base):
     __tablename__ = "Messages"
-    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True, autoincrement = True)
     user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     content: Mapped[str] = mapped_column(Text)
@@ -107,7 +107,7 @@ class Messages(Base):
 
 class Attachments(Base):
     __tablename__ = "Attachments"
-    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True)
+    id: Mapped[BIGINT] = mapped_column(BigInteger, primary_key = True, autoincrement = True)
     message_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Messages.id"))
     url: Mapped[str] = mapped_column(String(512))
     content_type: Mapped[str] = mapped_column(String(128))
@@ -117,7 +117,7 @@ class Attachments(Base):
 
 class Log_entries(Base):
     __tablename__ = "Log_entries"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True)
+    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
     action: Mapped[str] = mapped_column(String) #ban, mute, kick, role_add, voice_leave, member_join, member_leave
