@@ -26,8 +26,11 @@ class UserService():
     async def clear_users(self, guild_id: int):
         await self.user_repo.delete_users_by_guild_id(guild_id)
 
-    async def get_userDSID_by_dsID(self, ds_id: int) -> int:
+    async def get_userDSID_by_ID(self, ds_id: int) -> int:
         return await self.user_repo.get_userDSID_by_user_ID(ds_id)
+    
+    async def get_userID_by_DS_ID(self, ds_id: int) -> int:
+        return await self.user_repo.get_userID_by_dsID(ds_id)
     
     async def get_user_warnings(self, ds_id: int) -> int:
         return await self.user_repo.get_user_user_warnings(ds_id)
