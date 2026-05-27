@@ -50,7 +50,7 @@ class AutoModCog(commands.Cog):
             return disnake.utils.get(logs_category.text_channels, name="mod-log")
         return None
     
-    async def log_action(self, guild: disnake.Guild, embed: disnake.Embed):
+    async def log_action_to_ds_channel(self, guild: disnake.Guild, embed: disnake.Embed):
         log_channel = await self.get_log_channel(guild)
         if log_channel:
             await log_channel.send(embed=embed)
@@ -117,7 +117,7 @@ class AutoModCog(commands.Cog):
             color=disnake.Color.red(),
             timestamp=datetime.utcnow()
         )
-        await self.log_action(guild, embed)
+        await self.log_action_to_ds_channel(guild, embed)
 
         async def unmute():
             await asyncio.sleep(duration)
@@ -131,7 +131,7 @@ class AutoModCog(commands.Cog):
                 color=disnake.Color.green(),
                 timestamp=datetime.utcnow()
             )
-            await self.log_action(guild, unmute_embed)
+            await self.log_action_to_ds_channel(guild, unmute_embed)
         
         
         asyncio.create_task(unmute())
