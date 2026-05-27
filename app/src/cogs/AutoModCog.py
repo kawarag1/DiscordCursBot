@@ -164,13 +164,15 @@ class AutoModCog(commands.Cog):
                     async with async_session_factory() as session:
                         async with session.begin():
                             action_service = ActionService(session)
+                            user_service = UserService(session)
+                            user_id = await user_service.get_userID_by_DS_ID(message.author.id)
                             await action_service.log_action(
                                 ActionSchema(
                                     guild_id=message.guild.id,
-                                    user_id=message.author.id,
+                                    user_id=user_id,
                                     action="warn",
                                     reason="Использование запрещённого слова",
-                                    target_id=message.author.id,
+                                    target_id=user_id,
                                     details=f"Автоматическое предупреждение",
                                     created_at=datetime.utcnow()
                                 )
