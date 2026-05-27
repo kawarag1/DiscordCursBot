@@ -6,6 +6,7 @@ from disnake.ext import commands
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.services.action_service import ActionService
 from app.src.orm.database.database import async_session_factory
+from app.src.services.user_service import UserService
 
 
 class AdminCog(commands.Cog):
@@ -48,13 +49,16 @@ class AdminCog(commands.Cog):
             async with async_session_factory() as session:
                 async with session.begin():
                     action_service = ActionService(session)
+                    user_service = UserService(session)
+                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user.id)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,
-                            user_id=inter.author.id,
+                            user_id=user_id,
                             action="ban",
                             reason=reason,
-                            target_id=user.id,
+                            target_id=target_user_id,
                             details=f"Duration: {days} days",
                             created_at=datetime.utcnow()
                         )
@@ -116,13 +120,16 @@ class AdminCog(commands.Cog):
             async with async_session_factory() as session:
                 async with session.begin():
                     action_service = ActionService(session)
+                    user_service = UserService(session)
+                    _user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user_id_int)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,
-                            user_id=inter.author.id,
+                            user_id=_user_id,
                             action="unban",
                             reason="Снятие блокировки",
-                            target_id=user_id_int,
+                            target_id=target_user_id,
                             details=f"Снят модератором {inter.author}",
                             created_at=datetime.utcnow()
                         )
@@ -176,13 +183,16 @@ class AdminCog(commands.Cog):
             async with async_session_factory() as session:
                 async with session.begin():
                     action_service = ActionService(session)
+                    user_service = UserService(session)
+                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user.id)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,
-                            user_id=inter.author.id,
+                            user_id=user_id,
                             action="kick",
                             reason=reason,
-                            target_id=user.id,
+                            target_id=target_user_id,
                             details="",
                             created_at=datetime.utcnow()
                         )
