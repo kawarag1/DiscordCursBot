@@ -62,3 +62,7 @@ services:
 networks:
   my-shared-network:
     external: true
+
+volumes:
+  redis_data:     
+  postgres_data:
