@@ -8,6 +8,8 @@ from disnake.ext import commands
 from pathlib import Path
 
 from app.src.orm.database.database import async_session_factory
+from app.src.schemas.response.action_schema import ActionSchema
+from app.src.services.action_service import ActionService
 from app.src.services.user_service import UserService
 
 class AutoModCog(commands.Cog):
@@ -60,6 +62,23 @@ class AutoModCog(commands.Cog):
                 warnings = await user_service.add_warning(message.author.id)
                 if warnings >= self.settings.get("max_warnings", 3):
                     if self.settings.get("mute_user", True):
+                        try:
+                            async with async_session_factory() as session:
+                                async with session.begin():
+                                    action_service = ActionService(session)
+                                    await action_service.log_action(
+                                        ActionSchema(
+                                            guild_id=message.guild.id,
+                                            user_id=message.author.id,
+                                            action="mute",
+                                            reason="Превышение допустимого количества предупреждений",
+                                            target_id=message.author.id,
+                                            details=f"Автоматический мут за превышение количества предупреждений",
+                                            created_at=datetime.utcnow()
+                                        )
+                                    )
+                        except Exception as e:
+                            print(f"❌ Ошибка при логировании мута: {e}")
                         await self.mute_user(message.guild, message.author, reason="Превышение количества предупреждений")
                         await message.channel.send(f"⚠️ {message.author.mention}, вы были замучены за превышение количества предупреждений.", delete_after=10)
                 else:
@@ -139,6 +158,23 @@ class AutoModCog(commands.Cog):
         if contains:
             if self.settings.get("warn_user", True):
                 await self.warn_user(message)
+                try:
+                    async with async_session_factory() as session:
+                        async with session.begin():
+                            action_service = ActionService(session)
+                            await action_service.log_action(
+                                ActionSchema(
+                                    guild_id=message.guild.id,
+                                    user_id=message.author.id,
+                                    action="warn",
+                                    reason="Использование запрещённого слова",
+                                    target_id=message.author.id,
+                                    details=f"Автоматическое предупреждение",
+                                    created_at=datetime.utcnow()
+                                )
+                            )
+                except Exception as e:
+                    print(f"❌ Ошибка при логировании предупреждения: {e}")
 
             if self.settings.get("delete_message", True):
                 try:
