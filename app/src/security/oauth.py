@@ -28,4 +28,4 @@ async def get_current_owner(
             detail="Внутренняя ошибка сервера, попробуйте позже.",
         )
     owner = await OwnerRepository(session).get_by_id(int(owner_id))
-    return OwnerSchema.model_validate(owner)
+    return owner
