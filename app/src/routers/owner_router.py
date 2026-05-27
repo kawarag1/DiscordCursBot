@@ -8,6 +8,7 @@ from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.security.oauth import get_current_owner
 from app.src.services.owner_service import OwnerService
 from app.src.utils.redis.redis_client import get_redis
+from app.src.settings.settings import settings
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
@@ -17,8 +18,8 @@ async def exchange_code(code: CodeRequest, response: Response, session: AsyncSes
     owner_token = await OwnerService(session, redis).exchange_code(code=code.code)
     ds_id = await OwnerService(session, redis).get_owner_info(owner_token.access_token)
     tokens = await OwnerService(session, redis).add_owner(ds_id, owner_token.access_token, owner_token.refresh_token)
-    response.set_cookie(key="access_token", value=tokens.access_token, httponly=True, max_age=tokens.expires_in)
-    response.set_cookie(key="refresh_token", value=tokens.refresh_token, httponly=True, max_age=tokens.expires_in * 24 * 7)
+    response.set_cookie(key="access_token", value=tokens.access_token, httponly=True, max_age=settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES * 60)
+    response.set_cookie(key="refresh_token", value=tokens.refresh_token, httponly=True, max_age=settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60)
     return tokens
 
 @router.post("/logout", description="Выход из аккаунта")
