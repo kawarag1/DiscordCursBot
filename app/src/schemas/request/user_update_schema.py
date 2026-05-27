@@ -7,3 +7,4 @@ class UserUpdate(BaseModel):
     avatar_url: Optional[str]
     message_count: int
     level: int
+    warnings: int
