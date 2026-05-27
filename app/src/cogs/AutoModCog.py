@@ -137,14 +137,16 @@ class AutoModCog(commands.Cog):
 
         contains = await self.contains_bad_word(message)
         if contains:
+            if self.settings.get("warn_user", True):
+                await self.warn_user(message)
+                
             if self.settings.get("delete_message", True):
                 try:
                     await message.delete()
                 except Exception as e:
                     print(f"Ошибка при удалении сообщения: {e}")
-            if self.settings.get("warn_user", True):
-                await self.warn_user(message)
             return
+            
         
         if url_pattern.search(message.content):
             try:
