@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     JWT_ACCESS_TOKEN_LIFETIME_MINUTES: int
     JWT_REFRESH_TOKEN_LIFETIME_DAYS: int
+    JWT_SECRET_KEY: str
 
     JWT_REDIS_PREFIX: str = "jwt:"
     JWT_BLACKLIST_PREFIX: str = "blacklist:"
