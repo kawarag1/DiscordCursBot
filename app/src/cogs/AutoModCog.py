@@ -153,3 +153,6 @@ class AutoModCog(commands.Cog):
                 )
             except Exception as e:
                 print(f"Ошибка при удалении сообщения со ссылкой: {e}")
+
+def setup(bot: commands.Bot):
+    bot.add_cog(AutoModCog(bot))
