@@ -68,28 +68,28 @@ class OwnerService:
             refresh_token=await jwt_manager.encode_token(token_payload, token_type=JWTType.REFRESH)
         )
     
-    async def store_user_tokens(self, owner_id: int, access_token: str, refresh_token: str):
+    async def store_user_tokens(self, owner_id: int, discord_access_token: str, discord_refresh_token: str):
         await self._redis.check_user_tokens(
             owner_id,
-            access_token,
+            discord_access_token,
             settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES * 60
         )
 
         await self._redis.store_refresh_token(
             owner_id,
-            refresh_token,
+            discord_refresh_token,
             settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60
         )
 
-    async def add_owner(self, owner_id: int, access_token: str, refresh_token: str) -> OwnerSchema:
+    async def add_owner(self, owner_id: int, discord_access_token: str, discord_refresh_token: str) -> OwnerSchema:
         owner = await OwnerRepository(self.session).get_by_ds_id(owner_id)
         if owner:
             await self._redis.revoke_all_user_tokens(owner_id)
-            await self.store_user_tokens(owner.id, access_token, refresh_token)
+            await self.store_user_tokens(owner.id, discord_access_token, discord_refresh_token)
             return await self.get_user_tokens(sub=str(owner.id))
         else:
             await OwnerRepository(self.session).create(ds_id=owner_id)
-            await self.store_user_tokens(owner.id, access_token, refresh_token)
+            await self.store_user_tokens(owner.id, discord_access_token, discord_refresh_token)
             return await self.get_user_tokens(sub=str(owner.id))
 
     async def get_discord_tokens_from_redis(self, owner_id: int) -> AccessToken | None:

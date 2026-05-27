@@ -51,11 +51,11 @@ class AsyncRedisClient:
 
     async def store_access_token(self, user_id: int, token: str, expires_in: int):
         key = f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}"
-        await self._redis.setex(key, expires_in, str(token))
+        await self._redis.setex(key, expires_in, token)
         
     async def store_refresh_token(self, user_id: int, token: str, expires_in: int):
         key = f"{settings.JWT_REDIS_PREFIX}refresh:{str(user_id)}"
-        await self._redis.setex(key, expires_in, str(token))
+        await self._redis.setex(key, expires_in, token)
 
 def get_redis(db_num: int = 0):
     async def _get_redis() -> AsyncGenerator[AsyncRedisClient, None]:
