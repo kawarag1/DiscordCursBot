@@ -1,5 +1,4 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.src.orm.database.connector import get_session
@@ -8,12 +7,17 @@ from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.security.jwt_manager import JWTManager
 from app.src.utils.logger import logger
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/me")
-
 
 async def get_current_owner(
-    token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)
+    request: Request, session: AsyncSession = Depends(get_session)
 ):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен не найден в cookies",
+        )
+    
     data = await JWTManager().decode_token(token)
 
     owner_id = data.get("sub")
