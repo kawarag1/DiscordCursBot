@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.src.orm.database.database import get_session
 from app.src.schemas.request.code import CodeRequest
+from app.src.schemas.response.access_token import AccessToken
 from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.security.oauth import get_current_owner
 from app.src.services.owner_service import OwnerService
@@ -13,7 +14,7 @@ from app.src.settings.settings import settings
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
 
-@router.post("/get_owner", description="Авторизация владельца", response_model=OwnerSchema)
+@router.post("/get_owner", description="Авторизация владельца", response_model=AccessToken)
 async def exchange_code(code: CodeRequest, response: Response, session: AsyncSession = Depends(get_session), redis = Depends(get_redis(0))):
     owner_token = await OwnerService(session, redis).exchange_code(code=code.code)
     ds_id = await OwnerService(session, redis).get_owner_info(owner_token.access_token)
