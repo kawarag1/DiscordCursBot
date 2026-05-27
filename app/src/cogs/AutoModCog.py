@@ -208,7 +208,7 @@ class AutoModCog(commands.Cog):
         
         url_pattern = re.compile(r'https?://\S+', re.IGNORECASE)
         
-        contains, bad_word = await self.contains_bad_word(after)
+        contains = await self.contains_bad_word(after)
         if contains:
             if self.settings.get("delete_message", True):
                 try:
@@ -217,7 +217,7 @@ class AutoModCog(commands.Cog):
                     print(f"Ошибка при удалении отредактированного сообщения: {e}")
             
             if self.settings.get("warn_user", True):
-                await self.warn_user(after, bad_word)
+                await self.warn_user(after)
                 
                 try:
                     async with async_session_factory() as session:
