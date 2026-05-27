@@ -711,6 +711,7 @@
         "mute_duration": 3600,
         "delete_message": true,
         "warn_user": true,
+        "mute_user": true,
         "log_channel": "mod-log"
     }
 }

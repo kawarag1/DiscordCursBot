@@ -59,11 +59,11 @@ class AutoModCog(commands.Cog):
                 user_service = UserService(session)
                 warnings = await user_service.add_warning(message.author.id)
                 if warnings >= self.settings.get("max_warnings", 3):
-                    if self.settings.get("mute_user", False):
+                    if self.settings.get("mute_user", True):
                         await self.mute_user(message.guild, message.author, reason="Превышение количества предупреждений")
-                        await message.channel.send(f"⚠️ {message.author.mention}, вы были замучены за превышение количества предупреждений.")
+                        await message.channel.send(f"⚠️ {message.author.mention}, вы были замучены за превышение количества предупреждений.", delete_after=10)
                 else:
-                    await message.channel.send(f"⚠️ {message.author.mention}, данное слово запрещено! Это предупреждение {warnings}/{self.settings.get('max_warnings', 3)}.\nПожалуйста, соблюдайте правила сервера.")
+                    await message.channel.send(f"⚠️ {message.author.mention}, данное слово запрещено! Это предупреждение {warnings}/{self.settings.get('max_warnings', 3)}.\nПожалуйста, соблюдайте правила сервера.", delete_after=10)
                 
 
     async def mute_user(self, guild: disnake.Guild, user: disnake.Member, reason: str):
@@ -139,7 +139,7 @@ class AutoModCog(commands.Cog):
         if contains:
             if self.settings.get("warn_user", True):
                 await self.warn_user(message)
-                
+
             if self.settings.get("delete_message", True):
                 try:
                     await message.delete()
