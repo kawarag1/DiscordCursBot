@@ -17,10 +17,6 @@ class OwnerRepository(AbstractRepository):
                 id=result.id,
                 ds_id=result.ds_id,
                 email=result.email if result.email else "",
-                access_token=result.access_token if result.access_token else "",
-                refresh_token=result.refresh_token if result.refresh_token else "",
-                session_token=result.session_token if result.session_token else "",
-                expires_at=int(result.expires_at.timestamp()) if result.expires_at else None
             )
         return None
 
