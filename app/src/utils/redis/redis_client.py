@@ -23,8 +23,8 @@ class AsyncRedisClient:
             await self._redis.close()
 
     async def check_user_tokens(self, user_id, token: str, expires_in: int):
-        token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
-        if token:
+        stored_token = await self._redis.get(f"{settings.JWT_REDIS_PREFIX}access:{str(user_id)}")
+        if stored_token:
             await self.revoke_all_user_tokens(user_id)
 
             await self.store_access_token(user_id, token, expires_in)
