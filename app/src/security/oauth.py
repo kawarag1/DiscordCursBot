@@ -1,18 +1,27 @@
-from fastapi import HTTPException, Depends
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.src.orm.database.database import get_session
-from app.src.schemas.response.owner_schema import OwnerSchema
+from app.src.orm.database.connector import get_session
 from app.src.orm.database.repo.owner_repo import OwnerRepository
-from app.src.security.session_auth_token import session_auth
+from app.src.schemas.response.owner_schema import OwnerSchema
+from app.src.security.jwt_manager import JWTManager
+from app.src.utils.logger import logger
 
-async def get_current_owner(session_token: str = Depends(session_auth), session: AsyncSession = Depends(get_session)) -> OwnerSchema:
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/me")
 
-    
-    owner = await OwnerRepository(session).get_by_session_token(session_token)
-    if not owner:
-        raise HTTPException(status_code=404, detail="Owner not found")
 
-    return owner
+async def get_current_owner(
+    token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)
+):
+    data = await JWTManager().decode_token(token)
+
+    owner_id = data.get("sub")
+    if not owner_id:
+        logger.critical("Не найден sub (owner_id) в JWT токене!")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Внутренняя ошибка сервера, попробуйте позже.",
+        )
+    owner = await OwnerRepository(session).get_by_id(owner_id)
+    return OwnerSchema.model_validate(owner)
