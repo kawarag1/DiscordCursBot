@@ -1,7 +1,7 @@
 import disnake
 import httpx
 from sqlalchemy import select
-from datetime import datetime, timezone
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,6 @@ from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.action_service import ActionService
 from app.src.services.owner_service import OwnerService
 from app.src.settings.settings import settings
-from app.src.orm.database.repo.owner_repo import OwnerRepository
 from app.src.orm.models.models import Guild as ModelGuild
 from app.src.schemas.response.guild_schema import GuildSchema
 from app.src.schemas.response.owner_schema import OwnerSchema
