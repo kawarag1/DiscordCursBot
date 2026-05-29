@@ -78,7 +78,7 @@ class Log_entries(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
     user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Users.id"))
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
-    action: Mapped[str] = mapped_column(String) #ban, mute, kick, role_add, voice_leave, member_join, member_leave
+    action: Mapped[str] = mapped_column(String)
     target_id: Mapped[BIGINT] = mapped_column(BigInteger)
     reason: Mapped[str] = mapped_column(Text)
     details: Mapped[Optional[str]] = mapped_column(Text)
