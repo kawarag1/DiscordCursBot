@@ -1,7 +1,7 @@
 from sqlalchemy import delete, select
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
-from app.src.orm.models.models import Attachments, Guild, Messages, Subscription
+from app.src.orm.models.models import Attachments, Guild, Messages
 
 class GuildsRepository(AbstractRepository):
     model = Guild
@@ -12,8 +12,4 @@ class GuildsRepository(AbstractRepository):
 
     async def delete_messages(self, guild_id: int):
         query = delete(Messages).where(Messages.guild_id == guild_id)
-        await self._session.execute(query)
-    
-    async def delete_subs(self, guild_id: int):
-        query = delete(Subscription).where(Subscription.guild_id == guild_id)
         await self._session.execute(query)
