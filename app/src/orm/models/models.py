@@ -28,7 +28,6 @@ class Owner(Base):
     ds_id: Mapped[BIGINT] = mapped_column(BigInteger, unique = True)
     email: Mapped[Optional[str]] = mapped_column(String(256), unique = True)
 
-    subscriptions: Mapped["Subscription"] = relationship("Subscription", back_populates = "owners")
     guilds: Mapped["Guild"] = relationship("Guild", back_populates = "owners")
 
 class Guild(Base):
@@ -43,47 +42,6 @@ class Guild(Base):
     messages: Mapped["Messages"] = relationship("Messages", back_populates = "guilds")
     logs: Mapped["Log_entries"] = relationship("Log_entries", back_populates = "guilds")
     disabled_commands: Mapped["DisabledCommands"] = relationship("DisabledCommands", back_populates = "guilds")
-    subscriptions: Mapped["Subscription"] = relationship("Subscription", back_populates = "guilds")
-
-class Subscription(Base):
-    __tablename__ = "Subscriptions"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    user_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
-    guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
-    start_date: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime.utcnow)
-    end_date: Mapped[DateTime] = mapped_column(DateTime(timezone = True))
-    auto_renew: Mapped[bool] = mapped_column(Boolean, default = True)
-    payment_id: Mapped[int] = mapped_column(Integer, ForeignKey("Payments.id"))
-    plan_id: Mapped[int] = mapped_column(Integer, ForeignKey("SubscriptionPlans.id"))
-
-    owners: Mapped["Owner"] = relationship("Owner", back_populates = "subscriptions")
-    guilds: Mapped["Guild"] = relationship("Guild", back_populates = "subscriptions")
-    payments: Mapped["Payment"] = relationship("Payment", back_populates = "subscriptions")
-    plans: Mapped["SubscriptionPlan"] = relationship("SubscriptionPlan", back_populates = "subscriptions")
-
-class SubscriptionPlan(Base):
-    __tablename__ = "SubscriptionPlans"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    name: Mapped[str] = mapped_column(String(256))
-    description: Mapped[Optional[str]] = mapped_column(Text)
-    price_monthly: Mapped[float] = mapped_column(Numeric(10, 2))
-    price_yearly: Mapped[float] = mapped_column(Numeric(10, 2))
-    currency: Mapped[str] = mapped_column(String(3), default="RUB")
-
-    subscriptions: Mapped["Subscription"] = relationship("Subscription", back_populates = "plans")
-    payments: Mapped["Payment"] = relationship("Payment", back_populates = "plans")
-
-class Payment(Base):
-    __tablename__ = "Payments"
-    id: Mapped[int] = mapped_column(Integer, primary_key = True, autoincrement = True)
-    payment_method: Mapped[str] = mapped_column(String(50))
-    payment_id: Mapped[str] = mapped_column(String(256), unique = True)
-    plan_id: Mapped[int] = mapped_column(Integer, ForeignKey("SubscriptionPlans.id"))
-    amount: Mapped[float] = mapped_column(Numeric(10, 2))
-
-    plans: Mapped["SubscriptionPlan"] = relationship("SubscriptionPlan", back_populates = "payments")
-    subscriptions: Mapped["Subscription"] = relationship("Subscription", back_populates = "payments")
-
 
 class DisabledCommands(Base):
     __tablename__ = "DisabledCommands"
