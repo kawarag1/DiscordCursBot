@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 
+from app.src.services.guild_service import GuildService
 from app.src.services.user_service import UserService
 from app.src.orm.database.database import async_session_factory
 from app.src.schemas.request.user_schema import UserCreate
@@ -10,11 +11,24 @@ class MemberLeaveJoin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    def format_welcome_message(self, template: str, user: disnake.Member, guild: disnake.Guild) -> str:
+        replacements = {
+            "{user}": user.mention,
+            "{server}": guild.name,
+            "{member_count}": str(guild.member_count),
+            "{owner}": guild.owner.mention if guild.owner else "Неизвестно",
+        }
+        
+        result = template
+        for key, value in replacements.items():
+            result = result.replace(key, value)
+        
+        return result
 
-    async def create_welcome_embed(self, member: disnake.Member) -> disnake.Embed:
+    async def create_welcome_embed(self, member: disnake.Member, message: str | None) -> disnake.Embed:
         embed = disnake.Embed(
             title = "Добро пожаловать!",
-            description = f"мы приветсвуем тебя, {member.mention}, ты пришёл на **{member.guild.name}",
+            description = message if message else f"мы приветствуем тебя, {member.mention}, ты пришёл на **{member.guild.name}**",
             color = disnake.Color.red(),
             timestamp = datetime.now())
         
@@ -79,14 +93,23 @@ class MemberLeaveJoin(commands.Cog):
         if member.bot:
             return
         
-
-        welcome_channel = member.guild.system_channel
-
-        if welcome_channel:
-            embed = await self.create_welcome_embed(member)
-            await welcome_channel.send(embed=embed)
-
-        await self.add_user_to_database(member)
+        try:
+            welcome_channel = member.guild.system_channel
+            if welcome_channel:
+                async with async_session_factory() as session:
+                    async with session.begin():
+                        guild_service = GuildService(session)
+                        message = await guild_service.get_welcome_message(member.guild.id)
+                        if message:
+                            formatted_message = self.format_welcome_message(message, member, member.guild)
+                            embed = await self.create_welcome_embed(member, formatted_message)
+                            await welcome_channel.send(embed=embed)
+                        else:
+                            embed = await self.create_welcome_embed(member, None)
+                            await welcome_channel.send(embed=embed)
+            await self.add_user_to_database(member)
+        except Exception as e:
+            print(f"Ошибка при приветствии {member.name} на {member.guild.name}: {e}")
 
 
     @commands.Cog.listener()
