@@ -100,8 +100,8 @@ class MemberLeaveJoin(commands.Cog):
                     async with session.begin():
                         guild_service = GuildService(session)
                         message = await guild_service.get_welcome_message(member.guild.id)
-                        if message:
-                            formatted_message = self.format_welcome_message(message, member, member.guild)
+                        if message and message.welcome_message:
+                            formatted_message = self.format_welcome_message(message.welcome_message, member, member.guild)
                             embed = await self.create_welcome_embed(member, formatted_message)
                             await welcome_channel.send(embed=embed)
                         else:
