@@ -6,8 +6,10 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from app.src.orm.database.repo.guilds_repo import GuildsRepository
 from app.src.orm.database.repo.user_repo import UserRepository
 from app.src.schemas.request.action_schema import ActionSchema
+from app.src.schemas.request.welcome_message_schema import WelcomeMessageSchema
 from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.action_service import ActionService
 from app.src.services.owner_service import OwnerService
@@ -215,3 +217,9 @@ class GuildService():
                     details=f"Заблокирован с удалением сообщений за последние 3 дня. Причина: {reason}",
                     created_at=datetime.utcnow()
                 ))
+            
+    async def get_welcome_message(self, guild_id: int) -> str | None:
+        return await GuildsRepository(self.session).get_welcome_message(guild_id)
+    
+    async def update_welcome_message(self, guild_id: str, welcome_message: WelcomeMessageSchema):
+        await GuildsRepository(self.session).update_welcome_message(guild_id, welcome_message)
