@@ -38,7 +38,6 @@ async def kick_member(guild_id: str, user_id: str, ban_data: BanSchema, owner: O
 
 @router.put("/{guild_id}/welcome-message", description="Установка приветственного сообщения для сервера")
 async def update_welcome_message(guild_id: str, welcome_message: WelcomeMessageSchema, owner: OwnerSchema = Depends(get_current_owner), session: AsyncSession = Depends(get_session)):
-    welcome_message.guild_id = int(guild_id)
     await GuildService(session).update_welcome_message(int(guild_id), welcome_message)
 
 @router.get("/{guild_id}/welcome-message", description="Получение приветственного сообщения для сервера", response_model=WelcomeMessageSchema)
