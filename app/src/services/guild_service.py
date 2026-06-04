@@ -218,8 +218,9 @@ class GuildService():
                     created_at=datetime.utcnow()
                 ))
             
-    async def get_welcome_message(self, guild_id: int) -> str | None:
-        return await GuildsRepository(self.session).get_welcome_message(guild_id)
+    async def get_welcome_message(self, guild_id: int) -> WelcomeMessageSchema:
+        message = await GuildsRepository(self.session).get_welcome_message(guild_id)
+        return WelcomeMessageSchema(welcome_message=message)
     
-    async def update_welcome_message(self, guild_id: str, welcome_message: WelcomeMessageSchema):
+    async def update_welcome_message(self, guild_id: int, welcome_message: WelcomeMessageSchema):
         await GuildsRepository(self.session).update_welcome_message(guild_id, welcome_message)

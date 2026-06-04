@@ -21,8 +21,8 @@ class GuildsRepository(AbstractRepository):
         welcome_message = result.scalar_one_or_none()
         return welcome_message
 
-    async def update_welcome_message(self, guild_id: str, welcome_message: WelcomeMessageSchema):
-        query = select(Guild).where(Guild.id == int(guild_id))
+    async def update_welcome_message(self, guild_id: int, welcome_message: WelcomeMessageSchema):
+        query = select(Guild).where(Guild.id == guild_id)
         result = await self._session.execute(query)
         guild = result.scalar_one_or_none()
         if guild:
