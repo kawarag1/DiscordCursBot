@@ -36,6 +36,7 @@ class Guild(Base):
     name: Mapped[str] = mapped_column(String(256))
     owner_id: Mapped[Optional[BIGINT]] = mapped_column(BigInteger, ForeignKey("Owners.ds_id"))
     icon_hash: Mapped[Optional[str]] = mapped_column(String(256))
+    welcome_message: Mapped[Optional[str]] = mapped_column(Text, nullable = True)
 
     owners: Mapped["Owner"] = relationship("Owner", back_populates = "guilds")
     users: Mapped["User"] = relationship("User", back_populates = "guilds")
