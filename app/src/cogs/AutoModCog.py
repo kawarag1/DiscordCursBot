@@ -95,7 +95,7 @@ class AutoModCog(commands.Cog):
                 reason="Создание роли для мута"
             )
 
-            await mute_role.edit(position=0)
+            await mute_role.edit(position=1)
             for channel in guild.channels:
                 await channel.set_permissions(mute_role, send_messages=False, speak=False)
         
@@ -126,7 +126,7 @@ class AutoModCog(commands.Cog):
         async def unmute():
             await asyncio.sleep(duration)
             await user.remove_roles(mute_role, reason="Срок мута истёк")
-            
+
             
             unmute_embed = disnake.Embed(
                 title="🔊 Срок мута истёк",
