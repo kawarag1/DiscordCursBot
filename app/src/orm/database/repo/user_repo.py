@@ -28,8 +28,8 @@ class UserRepository(AbstractRepository):
 
         return result
 
-    async def get_by_ds_id(self, ds_id: int) -> UserUpdate | None:
-        query = select(self.model).where(self.model.ds_id == ds_id)
+    async def get_by_ds_id_guild(self, ds_id: int, guild_id: int) -> UserUpdate | None:
+        query = select(self.model).where(self.model.ds_id == ds_id, self.model.guild_id == guild_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
         if result:
@@ -77,15 +77,15 @@ class UserRepository(AbstractRepository):
 
         return result
     
-    async def add_warning(self, ds_id: int) -> int:
-        user = await self.get_by_ds_id(ds_id)
+    async def add_warning(self, ds_id: int, guild_id: int) -> int:
+        user = await self.get_by_ds_id_guild(ds_id, guild_id)
         if user:
             user.warnings = user.warnings + 1
             await self.update_by_ds_id(ds_id, warnings=user.warnings)
             return user.warnings
 
-    async def clear_warnings(self, ds_id: int):
-        user = await self.get_by_ds_id(ds_id)
+    async def clear_warnings(self, ds_id: int, guild_id: int):
+        user = await self.get_by_ds_id_guild(ds_id, guild_id)
         if user:
             user.warnings = 0
             await self.update_by_ds_id(ds_id, warnings=user.warnings)

@@ -59,7 +59,7 @@ class AutoModCog(commands.Cog):
         async with async_session_factory() as session:
             async with session.begin():
                 user_service = UserService(session)
-                warnings = await user_service.add_warning(message.author.id)
+                warnings = await user_service.add_warning(message.author.id, message.guild.id)
                 if warnings >= self.settings.get("max_warnings", 3):
                     if self.settings.get("mute_user", True):
                         try:
