@@ -35,8 +35,8 @@ class UserService():
     async def get_user_warnings(self, ds_id: int) -> int:
         return await self.user_repo.get_user_user_warnings(ds_id)
     
-    async def add_warning(self, ds_id: int):
-        return await self.user_repo.add_warning(ds_id)
+    async def   add_warning(self, ds_id: int, guild_id: int):
+        return await self.user_repo.add_warning(ds_id, guild_id)
 
     async def clear_warnings(self, ds_id: int):
         await self.user_repo.clear_warnings(ds_id)
