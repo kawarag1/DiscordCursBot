@@ -23,6 +23,16 @@ class AutoModCog(commands.Cog):
     async def on_ready(self):
         await self.load_config()
         print(f"{self.bot.user} is ready and AutoModCog is loaded!")
+        for guild in self.bot.guilds:
+            await self.elevate_bot_role(guild)
+
+
+    async def elevate_bot_role(self, guild: disnake.Guild):
+        bot_member = guild.me
+        bot_role = bot_member.top_role
+        
+        await bot_role.edit(position=1)
+        print(f"✅ Роль бота {bot_role.name} поднята на позицию 1")
 
     async def load_config(self):
         try:
@@ -96,7 +106,7 @@ class AutoModCog(commands.Cog):
                 permissions=disnake.Permissions(send_messages=False, speak=False)
             )
 
-            await mute_role.edit(position=1)
+            await mute_role.edit(position=3)
             for channel in guild.channels:
                 await channel.set_permissions(mute_role, send_messages=False, speak=False)
         
