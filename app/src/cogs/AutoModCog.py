@@ -94,6 +94,8 @@ class AutoModCog(commands.Cog):
                 name="Muted",
                 reason="Создание роли для мута"
             )
+
+            await mute_role.edit(positions=0)
             for channel in guild.channels:
                 await channel.set_permissions(mute_role, send_messages=False, speak=False)
         
