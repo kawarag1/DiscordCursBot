@@ -47,7 +47,6 @@ class InitMembersCog(commands.Cog):
                 await command_service.clear_disabled_commands(guild.id)
                 await guild_repo.delete_message_attachments(guild.id)
                 await guild_repo.delete_messages(guild.id)
-                await guild_repo.delete_subs(guild.id)
                 await user_service.clear_users(guild.id)
                 await guild_repo.delete_by_id(guild.id)
                 await session.commit()
