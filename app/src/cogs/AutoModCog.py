@@ -127,7 +127,7 @@ class AutoModCog(commands.Cog):
             await self.log_action_to_ds_channel(guild, mute_embed)
             
             async def log_unmute():
-                await asyncio.sleep(duration.total_seconds())
+                await asyncio.sleep(duration_.total_seconds())
                 
                 current_timeout = user.timed_out_until
                 if current_timeout and current_timeout <= datetime.utcnow():
