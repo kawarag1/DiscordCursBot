@@ -112,7 +112,8 @@ class AutoModCog(commands.Cog):
             duration_text = f"{duration_minutes} мин"
         
         try:
-            await user.timeout(duration, reason=reason)
+            until = datetime.utcnow() + duration
+            await user.edit(timed_out_until=until, reason=reason)
             
             mute_embed = disnake.Embed(
                 title="🔇 Пользователь замучен",
