@@ -17,8 +17,8 @@ class UserService():
         id = await self.user_repo.get_userID_by_dsID(ds_id)
         await self.user_repo.delete_by_id(id)
 
-    async def get_server_profile(self, ds_id: int):
-        return await self.user_repo.get_by_ds_id(ds_id)
+    async def get_server_profile(self, ds_id: int, guild_id: int):
+        return await self.user_repo.get_by_ds_id_guild(ds_id, guild_id)
 
     async def change_server_profile(self, user: UserCreate):
         await self.user_repo.update_by_ds_id(user.ds_id, **user.model_dump())

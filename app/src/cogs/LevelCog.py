@@ -21,7 +21,7 @@ class LevelCog(CommandCheckCog):
         async with async_session_factory() as session:
             async with session.begin():
                 user_service = UserService(session)
-                profile = await user_service.get_server_profile(message.author.id)
+                profile = await user_service.get_server_profile(message.author.id, guild.id)
                 profile.message_count += 1
                 level = math.sqrt(profile.message_count)
                 if level.is_integer():
@@ -47,7 +47,7 @@ class LevelCog(CommandCheckCog):
         async with async_session_factory() as session:
                 async with session.begin():
                     user_service = UserService(session)
-                    profile = await user_service.get_server_profile(inter.user.id)
+                    profile = await user_service.get_server_profile(inter.user.id, inter.guild.id)
                     await inter.response.send_message(f"Ваш уровень: {profile.level}")
 
 

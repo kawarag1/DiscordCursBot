@@ -104,7 +104,7 @@ class InitMembersCog(commands.Cog):
     async def add_or_update_member(self, member: disnake.Member):
         async with async_session_factory() as session:
             user_service = UserService(session)
-            user = await user_service.get_server_profile(member.id)
+            user = await user_service.get_server_profile(member.id, member.guild.id)
             if user:
                 new_user = UserCreate(
                     ds_id = member.id,
