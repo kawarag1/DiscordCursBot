@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import re
 
@@ -98,59 +98,63 @@ class AutoModCog(commands.Cog):
                 
 
     async def mute_user(self, guild: disnake.Guild, user: disnake.Member, reason: str):
-        mute_role = disnake.utils.get(guild.roles, name="Muted")
-        if not mute_role:
-            mute_role = await guild.create_role(
-                name="Muted",
-                reason="Создание роли для мута",
-                permissions=disnake.Permissions(send_messages=False, speak=False)
-            )
-
-            for channel in guild.channels:
-                await channel.set_permissions(mute_role, send_messages=False, speak=False)
+        duration_minutes = self.settings.get("mute_duration", 60)
+        duration = timedelta(minutes=duration_minutes)
         
-        await user.add_roles(mute_role, reason=reason)
-
-        duration = self.settings.get("mute_duration", 60)
-        duration_minutes = duration // 60
-        duration_hours = duration_minutes // 60
-        if duration_hours > 0:
-            duration_text = f"{duration_hours} час(ов)"
-        elif duration_minutes > 0:
-            duration_text = f"{duration_minutes} минут"
+        if duration_minutes >= 60:
+            hours = duration_minutes // 60
+            remaining_minutes = duration_minutes % 60
+            if remaining_minutes > 0:
+                duration_text = f"{hours} ч {remaining_minutes} мин"
+            else:
+                duration_text = f"{hours} ч"
         else:
-            duration_text = f"{duration} секунд"
+            duration_text = f"{duration_minutes} мин"
         
-        embed = disnake.Embed(
-            title="🔇 Пользователь замучен",
-            description=f"**Пользователь:** {user.mention}\n"
-                       f"**ID:** {user.id}\n"
-                       f"**Причина:** {reason}\n"
-                       f"**Длительность:** {duration_text}\n"
-                       f"**Модератор:** Бот (автоматически)",
-            color=disnake.Color.red(),
-            timestamp=datetime.utcnow()
-        )
-        await self.log_action_to_ds_channel(guild, embed)
-
-        async def unmute():
-            await asyncio.sleep(duration)
-            await user.remove_roles(mute_role, reason="Срок мута истёк")
-
+        try:
+            await user.timeout(duration, reason=reason)
             
-            unmute_embed = disnake.Embed(
-                title="🔊 Срок мута истёк",
+            mute_embed = disnake.Embed(
+                title="🔇 Пользователь замучен",
                 description=f"**Пользователь:** {user.mention}\n"
-                           f"**Длительность:** {duration_text}",
-                color=disnake.Color.green(),
+                        f"**ID:** {user.id}\n"
+                        f"**Причина:** {reason}\n"
+                        f"**Длительность:** {duration_text}\n"
+                        f"**Модератор:** Бот (автоматически)",
+                color=disnake.Color.red(),
                 timestamp=datetime.utcnow()
             )
-            await self.log_action_to_ds_channel(guild, unmute_embed)
-        
-        
-        asyncio.create_task(unmute())
-        
-        return mute_role
+            await self.log_action_to_ds_channel(guild, mute_embed)
+            
+            async def log_unmute():
+                await asyncio.sleep(duration.total_seconds())
+                
+                current_timeout = user.timed_out_until
+                if current_timeout and current_timeout <= datetime.utcnow():
+                    unmute_embed = disnake.Embed(
+                        title="🔊 Срок таймаута истёк",
+                        description=f"**Пользователь:** {user.mention}\n"
+                                f"**ID:** {user.id}\n"
+                                f"**Длительность:** {duration_text}",
+                        color=disnake.Color.green(),
+                        timestamp=datetime.utcnow()
+                    )
+                    await self.log_action_to_ds_channel(guild, unmute_embed)
+            
+            asyncio.create_task(log_unmute())
+            
+            return True
+            
+        except disnake.Forbidden:
+            error_embed = disnake.Embed(
+                title="⚠️ Ошибка",
+                description=f"Не удалось выдать таймаут {user.mention}\n"
+                        f"У бота нет права `moderate_members`",
+                color=disnake.Color.yellow(),
+                timestamp=datetime.utcnow()
+            )
+            await self.log_action_to_ds_channel(guild, error_embed)
+            return False
 
 
 
