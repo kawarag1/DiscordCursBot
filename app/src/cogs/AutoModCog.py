@@ -99,7 +99,7 @@ class AutoModCog(commands.Cog):
 
     async def mute_user(self, guild: disnake.Guild, user: disnake.Member, reason: str):
         duration_minutes = self.settings.get("mute_duration", 60)
-        duration = timedelta(minutes=duration_minutes)
+        duration_ = timedelta(minutes=duration_minutes)
         
         if duration_minutes >= 60:
             hours = duration_minutes // 60
@@ -112,8 +112,7 @@ class AutoModCog(commands.Cog):
             duration_text = f"{duration_minutes} мин"
         
         try:
-            until = datetime.utcnow() + duration
-            await user.edit(timed_out_until=until, reason=reason)
+            await user.timeout(duration = duration_, reason=reason)
             
             mute_embed = disnake.Embed(
                 title="🔇 Пользователь замучен",
