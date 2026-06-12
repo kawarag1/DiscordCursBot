@@ -92,7 +92,8 @@ class AutoModCog(commands.Cog):
         if not mute_role:
             mute_role = await guild.create_role(
                 name="Muted",
-                reason="Создание роли для мута"
+                reason="Создание роли для мута",
+                permissions=disnake.Permissions(send_messages=False, speak=False)
             )
 
             await mute_role.edit(position=1)
