@@ -106,7 +106,6 @@ class AutoModCog(commands.Cog):
                 permissions=disnake.Permissions(send_messages=False, speak=False)
             )
 
-            await mute_role.edit(position=3)
             for channel in guild.channels:
                 await channel.set_permissions(mute_role, send_messages=False, speak=False)
         
