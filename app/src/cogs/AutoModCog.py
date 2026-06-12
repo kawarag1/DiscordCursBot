@@ -98,18 +98,22 @@ class AutoModCog(commands.Cog):
                 
 
     async def mute_user(self, guild: disnake.Guild, user: disnake.Member, reason: str):
-        duration_minutes = self.settings.get("mute_duration", 60)
-        duration_ = timedelta(minutes=duration_minutes)
+        duration_seconds = self.settings.get("mute_duration", 3600)
+        duration_ = timedelta(seconds=duration_seconds)
         
-        if duration_minutes >= 60:
-            hours = duration_minutes // 60
-            remaining_minutes = duration_minutes % 60
-            if remaining_minutes > 0:
-                duration_text = f"{hours} ч {remaining_minutes} мин"
+        if duration_seconds >= 3600:
+            hours = duration_seconds // 3600
+            remaining_seconds = duration_seconds % 3600
+            if remaining_seconds > 0:
+                duration_text = f"{hours} ч {remaining_seconds // 60} мин"
+            else:
+                duration_text = f"{hours} ч"
+            if remaining_seconds     > 0:
+                duration_text = f"{hours} ч {remaining_seconds // 60} мин"
             else:
                 duration_text = f"{hours} ч"
         else:
-            duration_text = f"{duration_minutes} мин"
+            duration_text = f"{duration_seconds // 60} мин"
         
         try:
             await user.timeout(duration = duration_, reason=reason)
