@@ -37,9 +37,7 @@ class UserRepository(AbstractRepository):
                 ds_id=result.ds_id,
                 avatar_url=result.avatar_url if result.avatar_url else "",
                 nickname=result.nickname,
-                warnings=result.warnings,
-                message_count=result.message_count,
-                level=result.level,
+                warnings=result.warnings
             )
         return None
     
