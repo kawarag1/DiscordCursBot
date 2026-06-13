@@ -12,8 +12,6 @@ class User(Base):
     nickname: Mapped[str] = mapped_column(String(256))
     avatar_url: Mapped[Optional[str]] = mapped_column(String(512))
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone = True), default = datetime)
-    message_count: Mapped[BIGINT] = mapped_column(BigInteger, default = 0)
-    level: Mapped[int] = mapped_column(Integer, default = 1)
     warnings: Mapped[int] = mapped_column(Integer, default = 0)
     guild_id: Mapped[BIGINT] = mapped_column(BigInteger, ForeignKey("Guilds.id"))
 
