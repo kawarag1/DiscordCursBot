@@ -28,7 +28,7 @@ class MemberLeaveJoin(commands.Cog):
     async def create_welcome_embed(self, member: disnake.Member, message: str | None) -> disnake.Embed:
         embed = disnake.Embed(
             title = "Добро пожаловать!",
-            description = message if message else f"мы приветствуем тебя, {member.mention}, ты пришёл на **{member.guild.name}**",
+            description = message if message else f"мы приветствуем тебя, {member.mention}, ты пришёл на {member.guild.name}",
             color = disnake.Color.red(),
             timestamp = datetime.now())
         
@@ -52,7 +52,7 @@ class MemberLeaveJoin(commands.Cog):
     async def create_remove_embed(self, member: disnake.Member):
         embed = disnake.Embed(
                 title = "Плохие новости",
-                description = f"{member.mention}, решил уйти с **{member.guild.name}",
+                description = f"{member.mention}, решил уйти с **{member.guild.name}**",
                 color = disnake.Color.red(),
                 timestamp = datetime.now())
         
@@ -79,7 +79,8 @@ class MemberLeaveJoin(commands.Cog):
         async with async_session_factory() as session:
             async with session.begin():
                 user_service = UserService(session)
-                await user_service.add_new_user(user)
+                if await user_service.get_server_profile(member.id, member.guild.id) is None:
+                    await user_service.add_new_user(user)
 
     async def delete_user_from_database(self, member: disnake.Member):
         async with async_session_factory() as session:
