@@ -113,7 +113,6 @@ class MemberLeaveJoin(commands.Cog):
             print(f"Ошибка при приветствии {member.name} на {member.guild.name}: {e}")
 
 
-
     @commands.Cog.listener()
     async def on_member_ban(self, guild: disnake.Guild, user: disnake.User):
         if user.bot:
