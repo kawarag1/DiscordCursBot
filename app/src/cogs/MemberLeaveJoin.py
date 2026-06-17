@@ -113,17 +113,84 @@ class MemberLeaveJoin(commands.Cog):
             print(f"Ошибка при приветствии {member.name} на {member.guild.name}: {e}")
 
 
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild: disnake.Guild, user: disnake.User):
+        if user.bot:
+            return
+        
+        embed = await self.create_ban_embed(guild, user)
+        channel = guild.system_channel
+        if channel:
+            await channel.send(embed=embed)
+
+    async def create_ban_embed(self, guild: disnake.Guild, user: disnake.User) -> disnake.Embed:
+        reason = "Не указана"
+        moderator = "Неизвестно"
+        
+        try:
+            async for entry in guild.audit_logs(action=disnake.AuditLogAction.ban, limit=5):
+                if entry.target and entry.target.id == user.id:
+                    reason = entry.reason or "Не указана"
+                    moderator = entry.user.mention if entry.user else "Неизвестно"
+                    break
+        except:
+            pass
+        
+        embed = disnake.Embed(
+            title="🔨 Пользователь заблокирован",
+            description=(
+                f"**Пользователь:** {user.mention}\n"
+                f"**ID:** {user.id}\n"
+                f"**Причина:** {reason}\n"
+                f"**Модератор:** {moderator}"
+            ),
+            color=disnake.Color.dark_red(),
+            timestamp=datetime.utcnow()
+        )
+        if user.avatar:
+            embed.set_thumbnail(url=user.avatar.url)
+        return embed
+    
+    async def get_member_leave_action(self, guild: disnake.Guild, member_id: int) -> str:
+        try:
+            async for entry in guild.audit_logs(action=disnake.AuditLogAction.kick, limit=10):
+                if entry.target and entry.target.id == member_id:
+                    return "kick"
+            
+            try:
+                ban_entry = await guild.fetch_ban(disnake.Object(id=member_id))
+                if ban_entry:
+                    return "ban"
+            except:
+                pass
+            
+            return "leave"
+        except:
+            return "leave"
+    
     @commands.Cog.listener()
     async def on_member_remove(self, member: disnake.Member):
         if member.bot:
             return
         
-        welcome_channel = member.guild.system_channel
-
-        if welcome_channel:
-            embed = await self.create_remove_embed(member)
-            await welcome_channel.send(embed=embed)
-
+        action = await self.get_member_leave_action(member.guild, member.id)
+        
+        if action == "kick":
+            embed = await self.create_kick_embed(member)
+            channel = member.guild.system_channel
+            if channel:
+                await channel.send(embed=embed)
+            return
+        
+        if action == "ban":
+            return
+        
+        embed = await self.create_remove_embed(member)
+        channel = member.guild.system_channel
+        if channel:
+            await channel.send(embed=embed)
+        
         await self.delete_user_from_database(member)
 
 def setup(bot: commands.Bot):
