@@ -40,4 +40,7 @@ class UserService():
 
     async def clear_warnings(self, ds_id: int):
         await self.user_repo.clear_warnings(ds_id)
+
+    async def check_user_exists(self, ds_id: int, guild_id: int) -> bool:
+        return await self.user_repo.check_user_exists(ds_id, guild_id)
         

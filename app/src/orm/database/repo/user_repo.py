@@ -87,4 +87,10 @@ class UserRepository(AbstractRepository):
         if user:
             user.warnings = 0
             await self.update_by_ds_id(ds_id, warnings=user.warnings)
+
+    async def check_user_exists(self, ds_id: int, guild_id: int) -> bool:
+        query = select(self.model).where(self.model.ds_id == ds_id, self.model.guild_id == guild_id)
+        result_ = await self._session.execute(query)
+        result =  result_.scalars().first()
+        return result is not None
         

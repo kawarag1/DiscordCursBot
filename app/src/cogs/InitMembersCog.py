@@ -61,7 +61,12 @@ class InitMembersCog(commands.Cog):
         async with async_session_factory() as session:
             try:
                 members = [member async for member in guild.fetch_members(limit=None)]
-                for member in members:                    
+                for member in members:
+                    user_service = UserService(session)
+                    if await user_service.check_user_exists(member.id, member.guild.id):
+                        print(f"👤 Участник {member.name} уже существует в базе данных, пропускаю.")
+                        continue
+
                     user = UserCreate(
                         ds_id = member.id,
                         nickname = member.name,
@@ -72,7 +77,7 @@ class InitMembersCog(commands.Cog):
                         warnings = 0,
                         guild_id = member.guild.id
                     )
-                    user_service = UserService(session)
+                    
                     await user_service.add_new_user(user)
 
                 print("✅ Инициализация завершена!")
