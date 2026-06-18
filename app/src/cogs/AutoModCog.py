@@ -67,7 +67,7 @@ class AutoModCog(commands.Cog):
                                 async with session.begin():
                                     action_service = ActionService(session)
                                     user_service = UserService(session)
-                                    user_id = await user_service.get_userID_by_DS_ID(message.author.id)
+                                    user_id = await user_service.get_userID_by_DS_ID(message.author.id, message.guild.id)
                                     await action_service.log_action(
                                         ActionSchema(
                                             guild_id=message.guild.id,
@@ -175,7 +175,7 @@ class AutoModCog(commands.Cog):
                         async with session.begin():
                             action_service = ActionService(session)
                             user_service = UserService(session)
-                            user_id = await user_service.get_userID_by_DS_ID(message.author.id)
+                            user_id = await user_service.get_userID_by_DS_ID(message.author.id, message.guild.id)
                             await action_service.log_action(
                                 ActionSchema(
                                     guild_id=message.guild.id,
@@ -234,7 +234,7 @@ class AutoModCog(commands.Cog):
                         async with session.begin():
                             action_service = ActionService(session)
                             user_service = UserService(session)
-                            user_id = await user_service.get_userID_by_DS_ID(after.author.id)
+                            user_id = await user_service.get_userID_by_DS_ID(after.author.id, after.guild.id)
                             await action_service.log_action(
                                 ActionSchema(
                                     guild_id=after.guild.id,

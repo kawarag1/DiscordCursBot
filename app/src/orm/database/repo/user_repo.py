@@ -1,7 +1,7 @@
 from sqlalchemy import delete, select
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
-from app.src.orm.models.models import Attachments, User, Messages
+from app.src.orm.models.models import Attachments, Log_entries, User, Messages
 from app.src.schemas.request.user_update_schema import UserUpdate
 
 
@@ -12,6 +12,19 @@ class UserRepository(AbstractRepository):
         query = select(self.model.id).where(self.model.ds_id == ds_id)
         result_ = await self._session.execute(query)
         result =  result_.scalars().first()
+
+        if result is None:
+            return None
+
+        return result
+
+    async def get_userID_by_dsID_guild(self, ds_id: int, guild_id: int) -> int | None:
+        query = select(self.model.id).where(
+            self.model.ds_id == ds_id,
+            self.model.guild_id == guild_id,
+        )
+        result_ = await self._session.execute(query)
+        result = result_.scalars().first()
 
         if result is None:
             return None
@@ -42,6 +55,10 @@ class UserRepository(AbstractRepository):
         return None
     
     async def delete_users_by_guild_id(self, guild_id: int):
+        user_ids_subquery = select(User.id).where(User.guild_id == guild_id)
+        await self._session.execute(
+            delete(Log_entries).where(Log_entries.user_id.in_(user_ids_subquery))
+        )
         await self._session.execute(delete(User).where(User.guild_id == guild_id))
  
 

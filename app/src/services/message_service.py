@@ -10,7 +10,7 @@ class MessageService():
         self.user_repo = UserRepository(session)
 
     async def add_message(self, message: disnake.Message):
-        id = await self.user_repo.get_userID_by_dsID(message.author.id)
+        id = await self.user_repo.get_userID_by_dsID_guild(message.author.id, message.guild.id)
 
         message_ = ModelMessage(
             id = message.id,

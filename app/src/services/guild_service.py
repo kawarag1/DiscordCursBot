@@ -151,12 +151,12 @@ class GuildService():
                     detail=f"Failed to kick member from Discord: {response.text}"
                 )
             
-            user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+            user_id_ = await self.user_repo.get_userID_by_dsID_guild(user_ds_id, guild_id)
 
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
+                    user_id=await self.user_repo.get_userID_by_dsID_guild(owner_ds_id, guild_id),
                     action="kick",
                     reason=reason,
                     target_id=user_id_,
@@ -178,12 +178,12 @@ class GuildService():
                     detail=f"Failed to ban member from Discord: {response.text}"
                 )
             
-            user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+            user_id_ = await self.user_repo.get_userID_by_dsID_guild(user_ds_id, guild_id)
 
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
+                    user_id=await self.user_repo.get_userID_by_dsID_guild(owner_ds_id, guild_id),
                     action="ban_with_message_deletion",
                     reason=reason,
                     target_id=user_id_,
@@ -205,12 +205,12 @@ class GuildService():
                     detail=f"Failed to ban member with message deletion from Discord: {response.text}"
                 )
             
-            user_id_ = await self.user_repo.get_userID_by_dsID(user_ds_id)
+            user_id_ = await self.user_repo.get_userID_by_dsID_guild(user_ds_id, guild_id)
             
             await ActionService(self.session).log_action(
                 ActionSchema(
                     guild_id=guild_id,
-                    user_id=await self.user_repo.get_userID_by_dsID(owner_ds_id),
+                    user_id=await self.user_repo.get_userID_by_dsID_guild(owner_ds_id, guild_id),
                     action="ban_with_message_deletion",
                     reason=reason,
                     target_id=user_id_,

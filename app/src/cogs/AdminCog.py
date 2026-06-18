@@ -57,8 +57,8 @@ class AdminCog(CommandCheckCog):
                 async with session.begin():
                     action_service = ActionService(session)
                     user_service = UserService(session)
-                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
-                    target_user_id = await user_service.get_userID_by_DS_ID(user.id)
+                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id, inter.guild.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user.id, inter.guild.id)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,
@@ -125,8 +125,8 @@ class AdminCog(CommandCheckCog):
                 async with session.begin():
                     action_service = ActionService(session)
                     user_service = UserService(session)
-                    _user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
-                    target_user_id = await user_service.get_userID_by_DS_ID(user_id_int)
+                    _user_id = await user_service.get_userID_by_DS_ID(inter.author.id, inter.guild.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user_id_int, inter.guild.id)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,
@@ -201,8 +201,8 @@ class AdminCog(CommandCheckCog):
                 async with session.begin():
                     action_service = ActionService(session)
                     user_service = UserService(session)
-                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id)
-                    target_user_id = await user_service.get_userID_by_DS_ID(user.id)
+                    user_id = await user_service.get_userID_by_DS_ID(inter.author.id, inter.guild.id)
+                    target_user_id = await user_service.get_userID_by_DS_ID(user.id, inter.guild.id)
                     await action_service.log_action(
                         ActionSchema(
                             guild_id=inter.guild.id,

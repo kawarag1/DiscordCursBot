@@ -29,7 +29,9 @@ class UserService():
     async def get_userDSID_by_ID(self, ds_id: int) -> int:
         return await self.user_repo.get_userDSID_by_user_ID(ds_id)
     
-    async def get_userID_by_DS_ID(self, ds_id: int) -> int:
+    async def get_userID_by_DS_ID(self, ds_id: int, guild_id: int | None = None) -> int | None:
+        if guild_id is not None:
+            return await self.user_repo.get_userID_by_dsID_guild(ds_id, guild_id)
         return await self.user_repo.get_userID_by_dsID(ds_id)
     
     async def get_user_warnings(self, ds_id: int) -> int:
