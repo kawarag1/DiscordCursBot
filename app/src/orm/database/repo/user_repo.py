@@ -56,6 +56,17 @@ class UserRepository(AbstractRepository):
     
     async def delete_users_by_guild_id(self, guild_id: int):
         user_ids_subquery = select(User.id).where(User.guild_id == guild_id)
+
+        message_ids_subquery = select(Messages.id).where(
+            Messages.user_id.in_(user_ids_subquery)
+        )
+        await self._session.execute(
+            delete(Attachments).where(Attachments.message_id.in_(message_ids_subquery))
+        )
+        await self._session.execute(
+            delete(Messages).where(Messages.user_id.in_(user_ids_subquery))
+        )
+
         await self._session.execute(
             delete(Log_entries).where(Log_entries.user_id.in_(user_ids_subquery))
         )
