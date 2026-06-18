@@ -155,7 +155,7 @@ class AdminCog(commands.Cog):
         
         await inter.response.defer(ephemeral=True)
         
-        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} исключён.")
+        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} разблокирован.")
 
     @commands.slash_command(name="kick", description="Исключить пользователя")
     @commands.has_permissions(kick_members=True)
@@ -228,7 +228,13 @@ class AdminCog(commands.Cog):
             timestamp=datetime.utcnow()
         )
         
-        await inter.response.send_message(embed=embed)
+        channel = disnake.utils.get(inter.guild.text_channels, name = "members")
+        if channel:
+            channel.send(embed=embed)
+
+        await inter.response.defer(ephemeral=True)
+        
+        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} разблокирован.")
 
 
 
