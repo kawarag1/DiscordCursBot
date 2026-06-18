@@ -12,7 +12,9 @@ from app.src.schemas.request.action_schema import ActionSchema
 from app.src.schemas.request.welcome_message_schema import WelcomeMessageSchema
 from app.src.schemas.response.member_schema import MemberSchema
 from app.src.services.action_service import ActionService
+from app.src.services.command_service import CommandService
 from app.src.services.owner_service import OwnerService
+from app.src.services.user_service import UserService
 from app.src.settings.settings import settings
 from app.src.orm.models.models import Guild as ModelGuild
 from app.src.schemas.response.guild_schema import GuildSchema
@@ -41,6 +43,21 @@ class GuildService():
         )
         self.session.add(new_guild)
         await self.session.commit()
+
+    async def clear_guild_data(self, guild_id: int):
+        action_service = ActionService(self.session)
+        command_service = CommandService(self.session)
+        user_service = UserService(self.session)
+        guild_repo = GuildsRepository(self.session)
+
+        # Keep a guild-scoped cleanup pass to handle legacy inconsistent rows.
+        await action_service.clear_actions(guild_id)
+        await guild_repo.delete_message_attachments(guild_id)
+        await guild_repo.delete_messages(guild_id)
+
+        await command_service.clear_disabled_commands(guild_id)
+        await user_service.clear_users(guild_id)
+        await guild_repo.delete_by_id(guild_id)
 
     async def get_user_guilds(self, owner: OwnerSchema) -> list:
         tokens = await self.owner_service.get_discord_tokens_from_redis(owner.id)
