@@ -234,7 +234,7 @@ class AdminCog(commands.Cog):
 
         await inter.response.defer(ephemeral=True)
         
-        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} разблокирован.")
+        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} исключён.")
 
 
 
