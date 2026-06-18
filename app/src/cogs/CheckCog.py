@@ -52,4 +52,4 @@ class CommandCheckCog(commands.Cog):
             raise commands.CommandError("Команда отключена")
 
 def setup(bot):
-    pass
+    bot.add_cog(CommandCheckCog(bot))
