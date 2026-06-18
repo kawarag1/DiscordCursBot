@@ -95,6 +95,12 @@ class AboutBotCog(commands.Cog):
                   "**Использование:** `/warnings`",
             inline=False
         )
+
+        embed.add_field(
+            name="`/initialize`",
+            value="**Описание:** Запускает принудительную инициализацию учатников сервера\n" 
+                  "**Использование:** `/initialize`"
+        )
         await interaction.response.send_message(embed=embed)
 
 def setup(bot: commands.Bot):
