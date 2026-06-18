@@ -119,13 +119,11 @@ class MemberLeaveJoin(commands.Cog):
             return
         
         embed = await self.create_ban_embed(guild, user)
-        channel = guild.system_channel
+        channel = disnake.utils.get(guild.text_channels, name = "members")
         if channel:
             await channel.send(embed=embed)
 
     async def create_ban_embed(self, guild: disnake.Guild, user: disnake.User) -> disnake.Embed:
-        reason = "Не указана"
-        moderator = "Неизвестно"
         
         try:
             async for entry in guild.audit_logs(action=disnake.AuditLogAction.ban, limit=5):
@@ -137,14 +135,12 @@ class MemberLeaveJoin(commands.Cog):
             pass
         
         embed = disnake.Embed(
-            title="🔨 Пользователь заблокирован",
-            description=(
-                f"**Пользователь:** {user.mention}\n"
-                f"**ID:** {user.id}\n"
-                f"**Причина:** {reason}\n"
-                f"**Модератор:** {moderator}"
-            ),
-            color=disnake.Color.dark_red(),
+            title="✅ Пользователь заблокирован",
+            description=f"**Пользователь:** {user.mention}\n"
+                       f"**ID:** {user.id}\n"
+                       f"**Причина:** {reason}\n"
+                       f"**Модератор:** {moderator}",
+            color=disnake.Color.green(),
             timestamp=datetime.utcnow()
         )
         if user.avatar:
@@ -177,7 +173,7 @@ class MemberLeaveJoin(commands.Cog):
         
         if action == "kick":
             embed = await self.create_kick_embed(member)
-            channel = member.guild.system_channel
+            channel = disnake.utils.get(member.guild.text_channels, name = "members")
             if channel:
                 await channel.send(embed=embed)
             return

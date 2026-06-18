@@ -72,19 +72,11 @@ class AdminCog(commands.Cog):
         except Exception as e:
             print(f"❌ Ошибка при логировании бана: {e}")
         
-        await inter.guild.ban(user, reason=f"{reason} | Забанен: {inter.author}")
+        await inter.guild.ban(user, reason=f"{reason} | Заблокирован: {inter.user.mention}")
         
-        embed = disnake.Embed(
-            title="✅ Пользователь заблокирован",
-            description=f"**Пользователь:** {user.mention}\n"
-                       f"**ID:** {user.id}\n"
-                       f"**Причина:** {reason}\n"
-                       f"**Модератор:** {inter.author.mention}",
-            color=disnake.Color.green(),
-            timestamp=datetime.utcnow()
-        )
+        await inter.response.defer(ephemeral=True)
         
-        await inter.response.send_message(embed=embed)
+        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} заблокирован.")
     
     @commands.slash_command(name="unban", description="Разблокировать пользователя")
     @commands.has_permissions(ban_members=True)
@@ -157,7 +149,13 @@ class AdminCog(commands.Cog):
             timestamp=datetime.utcnow()
         )
         
-        await inter.response.send_message(embed=embed)
+        channel = disnake.utils.get(inter.guild.text_channels, name = "members")
+        if channel:
+            channel.send(embed=embed)
+        
+        await inter.response.defer(ephemeral=True)
+        
+        await inter.edit_original_response(content=f"✅ Пользователь {inter.user.mention} исключён.")
 
     @commands.slash_command(name="kick", description="Исключить пользователя")
     @commands.has_permissions(kick_members=True)
