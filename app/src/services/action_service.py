@@ -75,7 +75,6 @@ class ActionService:
     async def clear_actions(self, guild_id: int):
         delete_query = delete(Log_entries).filter(Log_entries.guild_id == guild_id)
         await self.session.execute(delete_query)
-        await self.session.commit()
     
 
     

@@ -45,11 +45,13 @@ class InitMembersCog(commands.Cog):
 
                 await action_service.clear_actions(guild.id)
                 await command_service.clear_disabled_commands(guild.id)
+                await session.commit()
                 await guild_repo.delete_message_attachments(guild.id)
                 await guild_repo.delete_messages(guild.id)
                 await user_service.clear_users(guild.id)
                 await guild_repo.delete_by_id(guild.id)
                 await session.commit()
+                
             
 
     async def initialize_guild_members(self, guild: disnake.Guild):
