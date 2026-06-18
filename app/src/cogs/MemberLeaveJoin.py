@@ -147,6 +147,30 @@ class MemberLeaveJoin(commands.Cog):
             embed.set_thumbnail(url=user.avatar.url)
         return embed
     
+    async def create_kick_embed(self, guild: disnake.Guild, user: disnake.User) -> disnake.Embed:
+        
+        try:
+            async for entry in guild.audit_logs(action=disnake.AuditLogAction.ban, limit=5):
+                if entry.target and entry.target.id == user.id:
+                    reason = entry.reason or "Не указана"
+                    moderator = entry.user.mention if entry.user else "Неизвестно"
+                    break
+        except:
+            pass
+        
+        embed = disnake.Embed(
+            title="✅ Пользователь исключен",
+            description=f"**Пользователь:** {user.mention}\n"
+                       f"**ID:** {user.id}\n"
+                       f"**Причина:** {reason}\n"
+                       f"**Модератор:** {moderator}",
+            color=disnake.Color.green(),
+            timestamp=datetime.utcnow()
+        )
+        if user.avatar:
+            embed.set_thumbnail(url=user.avatar.url)
+        return embed
+    
     async def get_member_leave_action(self, guild: disnake.Guild, member_id: int) -> str:
         try:
             async for entry in guild.audit_logs(action=disnake.AuditLogAction.kick, limit=10):
