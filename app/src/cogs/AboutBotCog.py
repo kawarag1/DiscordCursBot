@@ -28,14 +28,14 @@ class AboutBotCog(commands.Cog):
         embed = disnake.Embed(
             title="📚 Команды бота",
             description=f"Привет! Я **{self.bot.user.name}** - полезный бот для управления сервером.\n\n"
-                       f"Всего команд: **3**\n"
+                       f"Всего команд: **6**\n"
                        f"Используйте `/` для вызова команд",
             color=disnake.Color.blurple(),
             timestamp=interaction.created_at
         )
         
         embed.add_field(
-            name="🧹 `/clear`",
+            name="`/clear`",
             value="**Описание:** Очищает тестовые сообщения в чате (до 100 штук)\n"
                   "**Использование:** `/clear [количество=10]`\n"
                   "**Требуемые права:** Управление сообщениями",
@@ -43,7 +43,7 @@ class AboutBotCog(commands.Cog):
         )
         
         embed.add_field(
-            name="🔊 `/create_voice`",
+            name="`/create_voice`",
             value="**Описание:** Создает голосовой канал с указанными параметрами\n"
                   "**Параметры:**\n"
                   "• `name` - Название канала\n"
@@ -53,7 +53,7 @@ class AboutBotCog(commands.Cog):
         )
         
         embed.add_field(
-            name="🏓 `/ping`",
+            name="`/ping`",
             value="**Описание:** Проверяет задержку бота и его работоспособность\n"
                   "**Использование:** `/ping`\n"
                   "**Показывает:** Задержку API Discord",
@@ -61,8 +61,8 @@ class AboutBotCog(commands.Cog):
         )
 
         embed.add_field(
-            name="/kick",
-            value="**Описание:** Кикает участника с сервера\n"
+            name="`/kick`",
+            value="**Описание:** Исключает участника с сервера\n"
                   "**Параметры:**\n"
                   "• `user` - Пользователь, которого требуется исключить\n"
                   "• `reason` - Причина исключения (Необязательное поле)\n"
@@ -71,7 +71,7 @@ class AboutBotCog(commands.Cog):
         )
 
         embed.add_field(
-            name="/ban",
+            name="`/ban`",
             value="**Описание:** Блокирует участника на сервере\n"
                   "**Параметры:**\n"
                   "• `user` - Пользователь, которого требуется забанить\n"
@@ -81,11 +81,18 @@ class AboutBotCog(commands.Cog):
         )
 
         embed.add_field(
-            name="/unban",
+            name="`/unban`",
             value="**Описание:** Разблокирует участника на сервере\n"
                   "**Параметры:**\n"
                   "• `user_id` - Идентификатор пользователя, которого требуется разблокировать\n"
                   "**Использование:** `/unban user_id: 123456789",
+            inline=False
+        )
+
+        embed.add_field(
+            name="`/warnings`",
+            value="**Описание:** Показывает количество полученных предупреждений пользователем\n"
+                  "**Использование:** `/warnings`",
             inline=False
         )
         await interaction.response.send_message(embed=embed)
