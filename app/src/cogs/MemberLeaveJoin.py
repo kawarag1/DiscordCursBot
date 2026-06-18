@@ -176,6 +176,9 @@ class MemberLeaveJoin(commands.Cog):
             async for entry in guild.audit_logs(action=disnake.AuditLogAction.kick, limit=10):
                 if entry.target and entry.target.id == member_id:
                     return "kick"
+                elif entry.action == disnake.AuditLogAction.member_remove:
+                    if entry.user:
+                        return "kick"
             
             try:
                 ban_entry = await guild.fetch_ban(disnake.Object(id=member_id))
