@@ -3,13 +3,14 @@ from datetime import datetime
 import disnake
 from disnake.ext import commands
 
+from app.src.cogs.CheckCog import CommandCheckCog
 from app.src.schemas.request.action_schema import ActionSchema
 from app.src.services.action_service import ActionService
 from app.src.orm.database.database import async_session_factory
 from app.src.services.user_service import UserService
 
 
-class AdminCog(commands.Cog):
+class AdminCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 

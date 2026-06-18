@@ -1,7 +1,9 @@
 import disnake
 from disnake.ext import commands
 
-class AboutBotCog(commands.Cog):
+from app.src.cogs.CheckCog import CommandCheckCog
+
+class AboutBotCog(CommandCheckCog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
