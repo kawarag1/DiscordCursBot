@@ -79,7 +79,6 @@ class AdminCog(commands.Cog):
             description=f"**Пользователь:** {user.mention}\n"
                        f"**ID:** {user.id}\n"
                        f"**Причина:** {reason}\n"
-                       f"**Длительность:** {days} дней\n"
                        f"**Модератор:** {inter.author.mention}",
             color=disnake.Color.green(),
             timestamp=datetime.utcnow()
