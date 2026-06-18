@@ -19,8 +19,7 @@ class AdminCog(commands.Cog):
         self,
         inter: disnake.ApplicationCommandInteraction,
         user: disnake.Member,
-        reason: str = commands.Param(description="Причина блокировки", max_length=100),
-        days: int = commands.Param(description="Длительность блокировки в днях (0 для перманентного)", ge=0, le=7)
+        reason: str = commands.Param(description="Причина блокировки", max_length=100)
     ):
         
         if user == inter.author:
@@ -33,6 +32,13 @@ class AdminCog(commands.Cog):
         if user.guild_permissions.administrator:
             await inter.response.send_message(
                 "❌ Вы не можете заблокировать администратора сервера!",
+                ephemeral=True
+            )
+            return
+        
+        if not inter.author.guild_permissions.administrator:
+            await inter.response.send_message(
+                "❌ Вы не обладете правами администратора!",
                 ephemeral=True
             )
             return
@@ -59,7 +65,7 @@ class AdminCog(commands.Cog):
                             action="ban",
                             reason=reason,
                             target_id=target_user_id,
-                            details=f"Duration: {days} days",
+                            details=f"Ban from ds",
                             created_at=datetime.utcnow()
                         )
                     )
@@ -88,6 +94,12 @@ class AdminCog(commands.Cog):
         inter: disnake.ApplicationCommandInteraction,
         user_id: str = commands.Param(description="ID пользователя для разблокировки")
     ):
+        if not inter.author.guild_permissions.administrator:
+            await inter.response.send_message(
+                "❌ Вы не обладете правами администратора!",
+                ephemeral=True
+            )
+            return
         
         try:
             user_id_int = int(user_id)
@@ -156,6 +168,13 @@ class AdminCog(commands.Cog):
         user: disnake.Member,
         reason: str = commands.Param(description="Причина исключения", max_length=100)
     ):
+        
+        if not inter.author.guild_permissions.administrator:
+            await inter.response.send_message(
+                "❌ Вы не обладете правами администратора!",
+                ephemeral=True
+            )
+            return
         
         if user == inter.author:
             await inter.response.send_message(
