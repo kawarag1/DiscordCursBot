@@ -75,7 +75,7 @@ class AutoModCog(commands.Cog):
                                             action="mute",
                                             reason="Превышение допустимого количества предупреждений",
                                             target_id=user_id,
-                                            details=f"Автоматический мут за превышение количества предупреждений",
+                                            details="Автоматический мут за превышение количества предупреждений",
                                             created_at=datetime.utcnow()
                                         )
                                     )
@@ -183,7 +183,7 @@ class AutoModCog(commands.Cog):
                                     action="warn",
                                     reason="Использование запрещённого слова",
                                     target_id=user_id,
-                                    details=f"Автоматическое предупреждение",
+                                    details="Автоматическое предупреждение",
                                     created_at=datetime.utcnow()
                                 )
                             )
@@ -242,7 +242,7 @@ class AutoModCog(commands.Cog):
                                     action="warn",
                                     reason="Использование запрещённого слова (при редактировании)",
                                     target_id=user_id,
-                                    details=f"Автоматическое предупреждение за отредактированное сообщение",
+                                    details="Автоматическое предупреждение за отредактированное сообщение",
                                     created_at=datetime.utcnow()
                                 )
                             )

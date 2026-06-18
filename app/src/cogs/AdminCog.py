@@ -66,7 +66,7 @@ class AdminCog(CommandCheckCog):
                             action="ban",
                             reason=reason,
                             target_id=target_user_id,
-                            details=f"Ban from ds",
+                            details="Ban from ds",
                             created_at=datetime.utcnow()
                         )
                     )

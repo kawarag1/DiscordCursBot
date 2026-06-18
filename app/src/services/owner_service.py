@@ -1,6 +1,4 @@
 import httpx
-import secrets
-from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
@@ -10,7 +8,6 @@ from app.src.schemas.token_payload import TokenPayload
 from app.src.security.jwt_manager import JWTManager
 from app.src.security.jwt_type import JWTType
 from app.src.settings.settings import settings
-from app.src.schemas.response.owner_schema import OwnerSchema
 from app.src.schemas.response.ds_token_response import DsTokenResponse
 from app.src.utils.redis.redis_client import AsyncRedisClient
 

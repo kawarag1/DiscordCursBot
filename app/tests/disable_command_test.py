@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from fastapi.testclient import TestClient
 from main import app
 from app.src.schemas.request.disable_command_schema import DisableCommandSchema

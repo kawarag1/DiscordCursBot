@@ -1,5 +1,4 @@
-from sqlalchemy import select, exists, update
-from datetime import datetime
+from sqlalchemy import select, exists
 
 from app.src.orm.database.repo.abc_repo import AbstractRepository
 from app.src.orm.models.models import Owner
