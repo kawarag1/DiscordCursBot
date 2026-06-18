@@ -42,16 +42,18 @@ class InitMembersCog(commands.Cog):
                 command_service = CommandService(session)
                 guild_repo = GuildsRepository(session)
                 
+                await action_service.clear_actions(guild.id)
+
                 await guild_repo.delete_message_attachments(guild.id)
 
                 await guild_repo.delete_messages(guild.id)
 
-                await action_service.clear_actions(guild.id)
+                
 
                 await command_service.clear_disabled_commands(guild.id)
                 
                 await user_service.clear_users(guild.id)
-                
+
                 await guild_repo.delete_by_id(guild.id)
                 
             
