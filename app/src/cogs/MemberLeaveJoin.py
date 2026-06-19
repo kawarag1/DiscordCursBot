@@ -199,7 +199,7 @@ class MemberLeaveJoin(commands.Cog):
         action = await self.get_member_leave_action(member.guild, member.id)
         
         if action == "kick":
-            embed = await self.create_kick_embed(member)
+            embed = await self.create_kick_embed(member.guild, member)
             channel = disnake.utils.get(member.guild.text_channels, name = "members")
             if channel:
                 await channel.send(embed=embed)
