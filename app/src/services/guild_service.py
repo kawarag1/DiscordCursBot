@@ -50,7 +50,7 @@ class GuildService():
         user_service = UserService(self.session)
         guild_repo = GuildsRepository(self.session)
 
-        # Keep a guild-scoped cleanup pass to handle legacy inconsistent rows.
+        
         await action_service.clear_actions(guild_id)
         await guild_repo.delete_message_attachments(guild_id)
         await guild_repo.delete_messages(guild_id)
